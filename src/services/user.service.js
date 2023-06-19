@@ -31,13 +31,16 @@ const signIn = async (email, password) => {
     const token = Jwtoken.generateToken({ email, password });
     const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
-    const customeResUser = findUserResult.toObject();
-    delete customeResUser.password;
-    delete customeResUser.createdAt;
-    delete customeResUser.updatedAt;
+    const resUserData = findUserResult.toObject();
+
+    resUserData.id = resUserData._id;
+    delete resUserData._id;
+    delete resUserData.password;
+    delete resUserData.createdAt;
+    delete resUserData.updatedAt;
 
     const resUser = {
-      ...customeResUser,
+      ...resUserData,
       token: token,
       refreshToken: refreshToken,
       msg: 'Login Successfully!',
@@ -72,6 +75,9 @@ const signUp = async (email, password, userName) => {
       const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
       const resUserData = createUser.toObject();
+
+      resUserData.id = resUserData._id;
+      delete resUserData._id;
       delete resUserData.password;
       delete resUserData.createdAt;
       delete resUserData.updatedAt;
@@ -102,13 +108,16 @@ const profile = async id => {
       const token = Jwtoken.generateToken({ email, password });
       const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
-      const customeResUser = findUserResult.toObject();
-      delete customeResUser.password;
-      delete customeResUser.createdAt;
-      delete customeResUser.updatedAt;
+      const resUserData = findUserResult.toObject();
+
+      resUserData.id = resUserData._id;
+      delete resUserData._id;
+      delete resUserData.password;
+      delete resUserData.createdAt;
+      delete resUserData.updatedAt;
 
       const resUser = {
-        ...customeResUser,
+        ...resUserData,
         token: token,
         refreshToken: refreshToken,
         msg: 'Get profile Successfully!',
