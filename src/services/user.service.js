@@ -40,7 +40,7 @@ const signIn = async (email, password) => {
     delete resUserData.updatedAt;
 
     const resUser = {
-      ...resUserData,
+      results: resUserData,
       token: token,
       refreshToken: refreshToken,
       msg: 'Login Successfully!',
@@ -83,7 +83,7 @@ const signUp = async (email, password, userName) => {
       delete resUserData.updatedAt;
 
       const resUser = {
-        ...resUserData,
+        results: resUserData,
         token: token,
         refreshToken: refreshToken,
         msg: 'Sign Up Successfully!',
@@ -117,7 +117,7 @@ const profile = async id => {
       delete resUserData.updatedAt;
 
       const resUser = {
-        ...resUserData,
+        results: resUserData,
         token: token,
         refreshToken: refreshToken,
         msg: 'Get profile Successfully!',
