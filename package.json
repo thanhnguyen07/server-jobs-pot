@@ -10,7 +10,7 @@
     "build": "yarn clean && yarn build-babel",
     "production": "yarn build && node ./build/src/index.js",
     "dev": "nodemon --exec ./node_modules/.bin/babel-node index.js",
-    "start": "node /src/index.js"
+    "start": "node src/index.js"
   },
   "imports": {
     "#configs/*.js": "./src/configs/*.js",
