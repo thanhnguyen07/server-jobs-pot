@@ -5,7 +5,7 @@
 https://server-jobs-pot.vercel.app/
 ```
 
-## Sign Up
+# Sign Up
 
 `End Point`
 ```
@@ -33,8 +33,16 @@ POST
     Recommend: *encryption*
 
 `Successful response`
-```
 
+```
+{
+    "userName": "Thành Nguyễn",
+    "email": "thanhjang2k@gmail.com",
+    "_id": "648fc519685d6441587add9d",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0MzcwNSwiZXhwIjoxNjg3MTQ3MzA1fQ.RdpjmKN7TEfxB0Jarztbpeo8Zyj471fFNYyYl9qZYck",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0MzcwNSwiZXhwIjoxNjg4MDA3NzA1fQ.LQoiZ558j57hgNxdZkuh_OBfgbnqEnzP1i1XWeGVxcN",
+    "msg": "Sign Up Successfully!"
+}
 ```
 `Error response`
 
@@ -60,7 +68,7 @@ POST
         "password": "userName field is required"
     }
     ```
-## Sign In
+# Sign In
 
 `End Point`
 ```
