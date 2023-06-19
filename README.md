@@ -29,11 +29,13 @@ user/signup
 
 ```
 {
-    "userName": "Thành Nguyễn",
-    "email": "thanhjang2k@gmail.com",
-    "id": "648fcb48a0f5c7c30d2ead58",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0NTI4OCwiZXhwIjoxNjg3MTQ4ODg4fQ.7ZssoLcjSgjJBJnDSsxoQeehmzz9irkbBPjcmuWftcc",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0NTI4OCwiZXhwIjoxNjg4MDA5Mjg4fQ.KVxQ4spXIgXdLof1x5fXs-lW8vwi-tJB_6Vp5DQqQ0c",
+    "results": {
+        "userName": "Thành Nguyễn",
+        "email": "thanhjang2k@gmail.com",
+        "id": "648fce01126eab64c09842ee"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0NTk4NSwiZXhwIjoxNjg3MTQ5NTg1fQ.Ymrcu9ymfQ6x0sJhTAunXrkL0IeszhVbxwJmbIGVZk4",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTI3YjUwZGU2ZDAwNTRhYjAyNzI5MTUyZDNiMTMyNTQ3ODE1OTczNDMxNDNiZjM0MWE0YjIyMzMwMWExNGI5YyIsImlhdCI6MTY4NzE0NTk4NSwiZXhwIjoxNjg4MDA5OTg1fQ.CRrxdogecX_boy6O7YKwciI2nEeUPYRDHLcxcmS6wwE",
     "msg": "Sign Up Successfully!"
 }
 ```
