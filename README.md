@@ -12,11 +12,11 @@ https://server-jobs-pot.vercel.app/
 user/signup
 ```
 
-## Method
+### Method
 
 **`POST`**
 
-##  Parameter
+###  Parameter
 
 - **`userName`** - ***Required***
 
@@ -32,7 +32,7 @@ user/signup
 
     Recommend: ***encryption***
 
-##  Successful Response
+###  Successful Response
 
 ```
 {
@@ -44,7 +44,7 @@ user/signup
     "msg": "Sign Up Successfully!"
 }
 ```
-## Error Response
+### Error Response
 
 - **`Email registered`**
     ```
@@ -70,16 +70,16 @@ user/signup
     ```
 # Sign In
 
-## End Point
+### End Point
 ```
 user/signin
 ```
 
-## Method
+### Method
 
 **`POST`**
 
-## Parameter
+### Parameter
 
 - **`email`** - ***Required***
 
