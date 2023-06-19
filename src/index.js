@@ -1,5 +1,5 @@
 const express = require('express');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 const cors = require('cors');
 const db = require('#configs/db.config.js');
 const apiRoute = require('#routes/router.js');
@@ -9,7 +9,7 @@ db.connect();
 
 const app = express();
 
-app.use(helmet());
+// app.use(helmet());
 app.use(cors());
 
 app.use(express.urlencoded({extended: true}));
