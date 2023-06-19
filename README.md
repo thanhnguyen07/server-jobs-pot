@@ -7,7 +7,7 @@ https://server-jobs-pot.vercel.app/
 
 # Sign Up
 
-## End Point
+### End Point
 ```
 user/signup
 ```
