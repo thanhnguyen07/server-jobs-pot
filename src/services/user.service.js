@@ -28,8 +28,8 @@ const signIn = async (email, password) => {
   const findUserResult = await findUser(email, password);
 
   if (findUserResult) {
-    const token = Jwtoken.generateToken({email, password});
-    const refreshToken = Jwtoken.generateRefreshToken({email, password});
+    const token = Jwtoken.generateToken({ email, password });
+    const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
     const customeResUser = findUserResult.toObject();
     delete customeResUser.password;
@@ -52,7 +52,7 @@ const signIn = async (email, password) => {
   }
 };
 
-const signUp = async (email, password, firstName, lastName) => {
+const signUp = async (email, password, userName) => {
   const findEmailResult = await findUserByEmail(email);
 
   if (findEmailResult) {
@@ -64,13 +64,12 @@ const signUp = async (email, password, firstName, lastName) => {
     const newUser = new UserModel({
       email,
       password,
-      firstName,
-      lastName,
+      userName,
     });
     const createUser = await newUser.save();
     if (createUser) {
-      const token = Jwtoken.generateToken({email, password});
-      const refreshToken = Jwtoken.generateRefreshToken({email, password});
+      const token = Jwtoken.generateToken({ email, password });
+      const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
       const resUserData = createUser.toObject();
       delete resUserData.password;
@@ -98,10 +97,10 @@ const profile = async id => {
     const findUserResult = await findUserById(id);
 
     if (findUserResult) {
-      const {email, password} = findUserResult;
+      const { email, password } = findUserResult;
 
-      const token = Jwtoken.generateToken({email, password});
-      const refreshToken = Jwtoken.generateRefreshToken({email, password});
+      const token = Jwtoken.generateToken({ email, password });
+      const refreshToken = Jwtoken.generateRefreshToken({ email, password });
 
       const customeResUser = findUserResult.toObject();
       delete customeResUser.password;
@@ -145,9 +144,9 @@ const refreshToken = async (refreshToken, id) => {
           const findUser = await findUserById(id);
 
           if (findUser) {
-            const {email, password} = findUser;
+            const { email, password } = findUser;
 
-            const token = Jwtoken.generateToken({email, password});
+            const token = Jwtoken.generateToken({ email, password });
             const refreshToken = Jwtoken.generateRefreshToken({
               email,
               password,
