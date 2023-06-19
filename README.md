@@ -36,6 +36,30 @@ POST
 ```
 
 ```
+`Error response`
+
+- Email registered
+    ```
+    {
+        "msg": "Email registered!"
+    }
+    ```
+- Field required
+    ```
+    {
+        "msg": "userName field is required"
+    }
+    ```
+    ```
+    {
+        "msg": "email field is required"
+    }
+    ```
+    ```
+    {
+        "password": "userName field is required"
+    }
+    ```
 ## Sign In
 
 `End Point`
