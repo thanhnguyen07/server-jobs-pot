@@ -7,32 +7,32 @@ https://server-jobs-pot.vercel.app/
 
 # Sign Up
 
-`End Point`
+## End Point
 ```
 user/signup
 ```
 
-`Method`
+## Method
 
-POST
+**`POST`**
 
-`Parameter`
+##  Parameter
 
-- `userName` - *Required*
+- **`userName`** - ***Required***
 
-    Type: Sting
+    Type: **Sting**
 
-- `email` - *Required*
+- **`email`** - ***Required***
 
-    Type: Sting 
+    Type: **Sting** 
 
-- `password` - *Required*
+- **`password`** - ***Required***
 
-    Type: Sting
+    Type: **Sting**
 
-    Recommend: *encryption*
+    Recommend: ***encryption***
 
-`Successful response`
+##  Successful Response
 
 ```
 {
@@ -44,15 +44,15 @@ POST
     "msg": "Sign Up Successfully!"
 }
 ```
-`Error response`
+## Error Response
 
-- Email registered
+- **`Email registered`**
     ```
     {
         "msg": "Email registered!"
     }
     ```
-- Field required
+- **`Field required`**
     ```
     {
         "msg": "userName field is required"
@@ -70,23 +70,23 @@ POST
     ```
 # Sign In
 
-`End Point`
+## End Point
 ```
 user/signin
 ```
 
-`Method`
+## Method
 
-POST
+**`POST`**
 
-`Parameter`
+## Parameter
 
-- `email` - *Required*
+- **`email`** - ***Required***
 
-    Type: Sting 
+    Type: **Sting**
 
-- `password` - *Required*
+- **`password`** - ***Required***
 
-    Type: Sting
+    Type: **Sting**
 
-    Recommend: *encryption*
+    Recommend: ***encryption***
