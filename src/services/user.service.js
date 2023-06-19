@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const UserModel = require('#models/user.model.js');
-const Jwtoken = require('#middleware/JwToken.js');
+const UserModel = require('../models/user.model.js');
+const Jwtoken = require('../middleware/JwToken.js');
 
 const findUserByEmail = async email => {
   const result = await UserModel.findOne({

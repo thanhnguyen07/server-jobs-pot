@@ -1,9 +1,9 @@
 const express = require('express');
 // const helmet = require('helmet');
 const cors = require('cors');
-const db = require('#configs/db.config.js');
-const apiRoute = require('#routes/router.js');
-const {PORT} = require('#constants/index.js');
+const db = require('./src/configs/db.config.js');
+const apiRoute = require('./src/routes/router.js');
+const {PORT} = require('./src/constants/index.js');
 
 db.connect();
 

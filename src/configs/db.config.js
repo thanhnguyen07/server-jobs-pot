@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {URI_MONGODB} = require('#constants/index.js');
+const {URI_MONGODB} = require('../constants/index.js');
 
 mongoose.set('strictQuery', true);
 
