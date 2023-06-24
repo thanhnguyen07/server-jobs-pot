@@ -186,7 +186,7 @@ const refreshToken = async (refreshToken, req) => {
       } else {
         return {
           status: 400,
-          msg: 'User does not exist!',
+          msg: 'User does not exist or token is old. Please login again!',
         };
       }
     } else {
