@@ -114,7 +114,10 @@ const profile = async req => {
     const findUserResult = await findUserByToken(token);
 
     if (findUserResult) {
+      const {email, password} = findUserResult;
+
       const refreshToken = Jwtoken.generateRefreshToken({email, password});
+
       const resUserData = findUserResult.toObject();
 
       resUserData.id = resUserData._id;

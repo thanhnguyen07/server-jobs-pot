@@ -48,7 +48,6 @@ const authenToken = (req, res, next) => {
     if (!token) res.status(403).send({msg: 'Forbidden'});
 
     const resVerifyToken = verifyToken(token);
-    console.log(resVerifyToken);
 
     if (!resVerifyToken) {
       return res.status(401).send({msg: 'Unauthorized'});
