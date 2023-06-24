@@ -33,12 +33,11 @@ const signIn = async (email, password) => {
   const findUserResult = await findUser(email, password);
 
   if (findUserResult) {
-    const token = Jwtoken.generateToken({email, password});
     const refreshToken = Jwtoken.generateRefreshToken({email, password});
 
-    await updateUserToken(findUserResult._id, token);
-
     const resUserData = findUserResult.toObject();
+
+    const oldToken = resUserData.token;
 
     resUserData.id = resUserData._id;
     delete resUserData.token;
@@ -49,7 +48,7 @@ const signIn = async (email, password) => {
 
     const resUser = {
       results: resUserData,
-      token: token,
+      token: oldToken,
       refreshToken: refreshToken,
       msg: 'Login Successfully!',
     };
@@ -115,13 +114,7 @@ const profile = async req => {
     const findUserResult = await findUserByToken(token);
 
     if (findUserResult) {
-      const {email, password} = findUserResult;
-
-      const token = Jwtoken.generateToken({email, password});
       const refreshToken = Jwtoken.generateRefreshToken({email, password});
-
-      await updateUserToken(findUserResult._id, token);
-
       const resUserData = findUserResult.toObject();
 
       resUserData.id = resUserData._id;
@@ -142,13 +135,13 @@ const profile = async req => {
     } else {
       return {
         status: 400,
-        msg: 'User does not exist!',
+        msg: 'User does not exist or token is old. Please login again!',
       };
     }
   } catch (error) {
     return {
       status: 400,
-      msg: 'User does not exist!',
+      msg: 'User does not exist or token is old. Please login again!',
     };
   }
 };
