@@ -5,18 +5,19 @@ const db = require('./src/configs/db.config.js');
 const apiRoute = require('./src/routes/router.js');
 const {PORT} = require('./src/constants/index.js');
 
-db.connect();
+db.connect().then(() => {
+  const app = express();
 
-const app = express();
+  // app.use(helmet());
+  app.use(cors());
 
-// app.use(helmet());
-app.use(cors());
+  app.use(express.urlencoded({extended: true}));
 
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
+  app.use(express.json());
 
-app.use('/', apiRoute);
+  app.use('/', apiRoute);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+  });
 });

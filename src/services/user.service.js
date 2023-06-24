@@ -14,6 +14,11 @@ const findUserById = async id => {
 
   return result;
 };
+const findUserByToken = async token => {
+  const result = await UserModel.findOne({token});
+
+  return result;
+};
 
 const findUser = async (email, password) => {
   const result = await UserModel.findOne({
@@ -28,12 +33,15 @@ const signIn = async (email, password) => {
   const findUserResult = await findUser(email, password);
 
   if (findUserResult) {
-    const token = Jwtoken.generateToken({ email, password });
-    const refreshToken = Jwtoken.generateRefreshToken({ email, password });
+    const token = Jwtoken.generateToken({email, password});
+    const refreshToken = Jwtoken.generateRefreshToken({email, password});
+
+    await updateUserToken(findUserResult._id, token);
 
     const resUserData = findUserResult.toObject();
 
     resUserData.id = resUserData._id;
+    delete resUserData.token;
     delete resUserData._id;
     delete resUserData.password;
     delete resUserData.createdAt;
@@ -64,19 +72,21 @@ const signUp = async (email, password, userName) => {
       msg: 'Email registered!',
     };
   } else {
+    const token = Jwtoken.generateToken({email, password});
+    const refreshToken = Jwtoken.generateRefreshToken({email, password});
+
     const newUser = new UserModel({
       email,
       password,
       userName,
+      token,
     });
     const createUser = await newUser.save();
     if (createUser) {
-      const token = Jwtoken.generateToken({ email, password });
-      const refreshToken = Jwtoken.generateRefreshToken({ email, password });
-
       const resUserData = createUser.toObject();
 
       resUserData.id = resUserData._id;
+      delete resUserData.token;
       delete resUserData._id;
       delete resUserData.password;
       delete resUserData.createdAt;
@@ -98,19 +108,24 @@ const signUp = async (email, password, userName) => {
   }
 };
 
-const profile = async id => {
+const profile = async req => {
   try {
-    const findUserResult = await findUserById(id);
+    const token = Jwtoken.getToken(req);
+
+    const findUserResult = await findUserByToken(token);
 
     if (findUserResult) {
-      const { email, password } = findUserResult;
+      const {email, password} = findUserResult;
 
-      const token = Jwtoken.generateToken({ email, password });
-      const refreshToken = Jwtoken.generateRefreshToken({ email, password });
+      const token = Jwtoken.generateToken({email, password});
+      const refreshToken = Jwtoken.generateRefreshToken({email, password});
+
+      await updateUserToken(findUserResult._id, token);
 
       const resUserData = findUserResult.toObject();
 
       resUserData.id = resUserData._id;
+      delete resUserData.token;
       delete resUserData._id;
       delete resUserData.password;
       delete resUserData.createdAt;
@@ -138,51 +153,69 @@ const profile = async id => {
   }
 };
 
-const refreshToken = async (refreshToken, id) => {
-  return jwt.verify(
-    refreshToken,
-    process.env.ACCESS_REFRESH_TOKEN_SECRET,
-    async (err, data) => {
-      if (err) {
-        return {
-          status: 403,
-          msg: 'Forbidden!',
+const refreshToken = async (refreshToken, req) => {
+  const verifyRefreshToken = Jwtoken.verifyRefreshToken(refreshToken);
+
+  if (verifyRefreshToken) {
+    const token = Jwtoken.getToken(req);
+
+    if (token) {
+      const findUserResult = await findUserByToken(token);
+
+      if (findUserResult) {
+        const {email, password} = findUserResult;
+
+        const token = Jwtoken.generateToken({email, password});
+        const refreshToken = Jwtoken.generateRefreshToken({email, password});
+
+        await updateUserToken(findUserResult._id, token);
+
+        const resUserData = findUserResult.toObject();
+
+        resUserData.id = resUserData._id;
+        delete resUserData.token;
+        delete resUserData._id;
+        delete resUserData.password;
+        delete resUserData.createdAt;
+        delete resUserData.updatedAt;
+
+        const resUser = {
+          results: resUserData,
+          token: token,
+          refreshToken: refreshToken,
+          msg: 'Get profile Successfully!',
         };
+
+        return resUser;
       } else {
-        try {
-          const findUser = await findUserById(id);
-
-          if (findUser) {
-            const { email, password } = findUser;
-
-            const token = Jwtoken.generateToken({ email, password });
-            const refreshToken = Jwtoken.generateRefreshToken({
-              email,
-              password,
-            });
-
-            const resToken = {
-              token: token,
-              refreshToken: refreshToken,
-              msg: 'Refresh Token Successfully!',
-            };
-
-            return resToken;
-          } else {
-            return {
-              status: 400,
-              msg: 'User does not exist!',
-            };
-          }
-        } catch (error) {
-          return {
-            status: 400,
-            msg: 'User does not exist!',
-          };
-        }
+        return {
+          status: 400,
+          msg: 'User does not exist!',
+        };
       }
+    } else {
+      return {
+        status: 400,
+        msg: 'Token header is required!',
+      };
+    }
+  } else {
+    return {
+      status: 403,
+      msg: 'Forbidden!',
+    };
+  }
+};
+
+const updateUserToken = async (idUser, token) => {
+  const resUpdate = await UserModel.updateOne(
+    {
+      _id: idUser,
     },
+    {token},
   );
+
+  return resUpdate;
 };
 
 module.exports = {
@@ -192,4 +225,5 @@ module.exports = {
   signUp,
   profile,
   refreshToken,
+  updateUserToken,
 };
