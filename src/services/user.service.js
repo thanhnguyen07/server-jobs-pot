@@ -188,7 +188,7 @@ const refreshToken = async (refreshToken, req) => {
           results: resUserData,
           token: token,
           refreshToken: refreshToken,
-          msg: 'Get profile Successfully!',
+          msg: 'Refresh token Successfully!',
         };
 
         return resUser;
