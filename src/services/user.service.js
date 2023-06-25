@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user.model.js');
 const Jwtoken = require('../middleware/JwToken.js');
 
@@ -37,7 +36,17 @@ const signIn = async (email, password) => {
 
     const resUserData = findUserResult.toObject();
 
-    const oldToken = resUserData.token;
+    let token = resUserData.token;
+
+    const verifyToken = Jwtoken.verifyToken(token);
+
+    if (!verifyToken) {
+      token = Jwtoken.generateToken({
+        email: resUserData.email,
+        password: resUserData.password,
+      });
+      await updateUserToken(resUserData._id, token)
+    }
 
     resUserData.id = resUserData._id;
     delete resUserData.token;
@@ -48,7 +57,7 @@ const signIn = async (email, password) => {
 
     const resUser = {
       results: resUserData,
-      token: oldToken,
+      token: token,
       refreshToken: refreshToken,
       msg: 'Login Successfully!',
     };

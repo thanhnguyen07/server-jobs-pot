@@ -21,7 +21,8 @@ const generateRefreshToken = data => {
 
 const getToken = req => {
   const authorizationHeader = req.headers['authorization'];
-  // 'Beaer token'
+  // 'Bearer token'
+
   if (authorizationHeader) {
     const token = authorizationHeader.slice(7);
     return token;
@@ -43,7 +44,7 @@ const verifyRefreshToken = refreshToken => {
 
 const authenToken = (req, res, next) => {
   const token = getToken(req);
-
+  console.log('token', token);
   if (token) {
     if (!token) res.status(403).send({msg: 'Forbidden'});
 
