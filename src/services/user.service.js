@@ -1,5 +1,6 @@
 const UserModel = require('../models/user.model.js');
 const Jwtoken = require('../middleware/JwToken.js');
+const Firebase = require('../middleware/Firebase.js');
 
 const findUserByEmail = async email => {
   const result = await UserModel.findOne({
@@ -8,10 +9,22 @@ const findUserByEmail = async email => {
 
   return result;
 };
-const findUserById = async id => {
-  const result = await UserModel.findById(id);
+
+const findUserByUiid = async uid => {
+  const result = await UserModel.findOne({
+    uid: uid,
+  });
 
   return result;
+};
+
+const findUserById = async id => {
+  try {
+    const result = await UserModel.findById(id);
+    return result;
+  } catch (error) {
+    return null;
+  }
 };
 const findUserByToken = async token => {
   const result = await UserModel.findOne({token});
@@ -28,7 +41,18 @@ const findUser = async (email, password) => {
   return result;
 };
 
-const signIn = async (email, password) => {
+const updateUserToken = async (idUser, token) => {
+  const resUpdate = await UserModel.updateOne(
+    {
+      _id: idUser,
+    },
+    {token},
+  );
+
+  return resUpdate;
+};
+
+const signInWithEmail = async (email, password) => {
   const findUserResult = await findUser(email, password);
 
   if (findUserResult) {
@@ -45,7 +69,7 @@ const signIn = async (email, password) => {
         email: resUserData.email,
         password: resUserData.password,
       });
-      await updateUserToken(resUserData._id, token)
+      await updateUserToken(resUserData._id, token);
     }
 
     resUserData.id = resUserData._id;
@@ -71,7 +95,7 @@ const signIn = async (email, password) => {
   }
 };
 
-const signUp = async (email, password, userName) => {
+const signUpWithEmail = async (email, password, userName) => {
   const findEmailResult = await findUserByEmail(email);
 
   if (findEmailResult) {
@@ -82,12 +106,14 @@ const signUp = async (email, password, userName) => {
   } else {
     const token = Jwtoken.generateToken({email, password});
     const refreshToken = Jwtoken.generateRefreshToken({email, password});
+    const type = 'email';
 
     const newUser = new UserModel({
       email,
       password,
       userName,
       token,
+      type,
     });
     const createUser = await newUser.save();
     if (createUser) {
@@ -110,7 +136,7 @@ const signUp = async (email, password, userName) => {
     } else {
       return {
         status: 400,
-        msg: 'Error creating user!',
+        msg: 'Something wrong!',
       };
     }
   }
@@ -212,23 +238,106 @@ const refreshToken = async (refreshToken, req) => {
   }
 };
 
-const updateUserToken = async (idUser, token) => {
-  const resUpdate = await UserModel.updateOne(
-    {
-      _id: idUser,
-    },
-    {token},
-  );
+const signInWithGoogle = async (idToken, uid) => {
+  const verifyIdToken = await Firebase.verifyIdToken(idToken);
 
-  return resUpdate;
+  if (verifyIdToken) {
+    const userFireBaseData = await Firebase.getUser(uid);
+
+    if (userFireBaseData) {
+      const findIdResult = await findUserByUiid(uid);
+      const email = userFireBaseData.email;
+      const userName = userFireBaseData.displayName;
+      const refreshToken = Jwtoken.generateRefreshToken({email, uid});
+
+      if (findIdResult) {
+        const resUserData = findIdResult.toObject();
+
+        let token = resUserData.token;
+
+        const verifyToken = Jwtoken.verifyToken(token);
+
+        if (!verifyToken) {
+          token = Jwtoken.generateToken({
+            email: resUserData.email,
+            uid: resUserData.uid,
+          });
+          await updateUserToken(resUserData._id, token);
+        }
+
+        resUserData.id = resUserData._id;
+        delete resUserData.token;
+        delete resUserData._id;
+        delete resUserData.password;
+        delete resUserData.createdAt;
+        delete resUserData.updatedAt;
+
+        const resUser = {
+          results: resUserData,
+          token: token,
+          refreshToken: refreshToken,
+          msg: 'Login Successfully!',
+        };
+
+        return resUser;
+      } else {
+        const type = 'google';
+        const token = Jwtoken.generateToken({email, uid});
+
+        const newUser = new UserModel({
+          email,
+          uid,
+          userName,
+          token,
+          type,
+        });
+
+        const createUser = await newUser.save();
+
+        if (createUser) {
+          const resUserData = createUser.toObject();
+
+          resUserData.id = resUserData._id;
+          delete resUserData.token;
+          delete resUserData._id;
+          delete resUserData.createdAt;
+          delete resUserData.updatedAt;
+
+          const resUser = {
+            results: resUserData,
+            token: token,
+            refreshToken: refreshToken,
+            msg: 'Login Successfully!',
+          };
+          return resUser;
+        } else {
+          return {
+            status: 400,
+            msg: 'Something wrong!',
+          };
+        }
+      }
+    } else {
+      return {
+        status: 400,
+        msg: 'Something wrong. Please re-login!',
+      };
+    }
+  } else {
+    return {
+      status: 403,
+      msg: 'Forbidden!',
+    };
+  }
 };
 
 module.exports = {
   findUserByEmail,
   findUser,
-  signIn,
-  signUp,
+  signInWithEmail,
+  signUpWithEmail,
   profile,
   refreshToken,
   updateUserToken,
+  signInWithGoogle,
 };

@@ -4,10 +4,10 @@ const JwToken = require('../middleware/JwToken.js');
 
 const router = express.Router();
 
-router.post('/signupwithgoogle', usersController.signupwithgoogle);
-router.post('/signin', usersController.signIn);
-router.post('/signup', usersController.signUp);
+router.post('/signin-with-google', usersController.signInWithGoogle);
+router.post('/signin-with-email', usersController.signInWithEmail);
+router.post('/signup-with-email', usersController.signUpWithEmail);
 router.get('/profile', JwToken.authenToken, usersController.profile);
-router.post('/refreshtoken', usersController.refreshToken);
+router.post('/refresh-token', usersController.refreshToken);
 
 module.exports = router;

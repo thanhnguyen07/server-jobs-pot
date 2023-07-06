@@ -1,11 +1,10 @@
 const UserService = require('../services/user.service.js');
-const auth = require('firebase-admin/auth');
 
-const signIn = async (req, res) => {
+const signInWithEmail = async (req, res) => {
   const {email, password} = req.body;
 
   console.log('====================================');
-  console.log('| [POST] /user/signin');
+  console.log('| [POST] /user/signin-with-email');
   console.log('| Email: ', email);
   console.log('| Password: ', password);
   console.log('| ----------------------------------');
@@ -19,7 +18,7 @@ const signIn = async (req, res) => {
   if (!password)
     return res.status(400).json({msg: 'password field is required'});
 
-  const resultSignIn = await UserService.signIn(email, password);
+  const resultSignIn = await UserService.signInWithEmail(email, password);
 
   console.log('|', resultSignIn.msg);
   if (resultSignIn.status !== 400) {
@@ -32,11 +31,11 @@ const signIn = async (req, res) => {
   console.log('====================================');
 };
 
-const signUp = async (req, res) => {
+const signUpWithEmail = async (req, res) => {
   const {email, password, userName} = req?.body;
 
   console.log('====================================');
-  console.log('| [POST] /user/signup');
+  console.log('| [POST] /user/signup-with-email');
   console.log('| Email: ', email);
   console.log('| Password: ', password);
   console.log('| UserName: ', userName);
@@ -53,7 +52,11 @@ const signUp = async (req, res) => {
   if (!userName)
     return res.status(400).json({msg: 'userName field is required'});
 
-  const resultSignUp = await UserService.signUp(email, password, userName);
+  const resultSignUp = await UserService.signUpWithEmail(
+    email,
+    password,
+    userName,
+  );
 
   console.log('|', resultSignUp.msg);
   if (resultSignUp.status !== 400) {
@@ -88,7 +91,7 @@ const profile = async (req, res) => {
 const refreshToken = async (req, res) => {
   const {refreshToken} = req?.body;
   console.log('====================================');
-  console.log('| [POST] /user/refreshtoken');
+  console.log('| [POST] /user/refresh-token');
   console.log('| RefreshToken: ', refreshToken);
   console.log('| ----------------------------------');
 
@@ -114,25 +117,45 @@ const refreshToken = async (req, res) => {
   console.log('====================================');
 };
 
-const signupwithgoogle = async (req, res) => {
-  const body = req.body;
+const signInWithGoogle = async (req, res) => {
+  const {idToken, uid} = req.body;
 
   console.log('====================================');
-  console.log('| [POST] /user/signupwithgoogle');
-  console.log('| body: ', body);
+  console.log('| [POST] /user/signin-with-google');
+  console.log('| idToken: ', idToken);
+  console.log('| uid: ', uid);
   console.log('| ----------------------------------');
 
-  auth
-    .getAuth()
-    .verifyIdToken(
-      'eyJhbGciOiJSUzI1NiIsImtpZCI6ImY5N2U3ZWVlY2YwMWM4MDhiZjRhYjkzOTczNDBiZmIyOTgyZTg0NzUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiVGjDoG5oIE5ndXnhu4VuIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGNMaWdaSEpvd1plOXhjRFowekFjdWZUWXFIekljVFAzcGVwWUJTRkpobG1nPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL2pvYnMtcG90LTZmMmIzIiwiYXVkIjoiam9icy1wb3QtNmYyYjMiLCJhdXRoX3RpbWUiOjE2ODg0NTEyNTUsInVzZXJfaWQiOiJYdmVRNUxPU0Z1TThUaHpGRU5vVE11djdmNDgzIiwic3ViIjoiWHZlUTVMT1NGdU04VGh6RkVOb1RNdXY3ZjQ4MyIsImlhdCI6MTY4ODQ1MTI1NSwiZXhwIjoxNjg4NDU0ODU1LCJlbWFpbCI6InRoYW5oamFuZzJrQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTE2MTY1ODQ0NTY1OTI3NzI2MDc1Il0sImVtYWlsIjpbInRoYW5oamFuZzJrQGdtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6Imdvb2dsZS5jb20ifX0.BfWe-Y7BsDolHzRGlhiCilYw54-u1ggDWFG-0fT-7PdbGecRl5PmHxDS4SglJkR-CI8W91U6_5V379RiGR2BgLgHj_Ut_dIU6knLH3f251EYbcjLA_RuzH9CaTj8znxA7J2GWsVkyMICCbJ2MM-_899C6KJbL_Dw7HM9nO-jZ2yBetwOQGzKv0iWRDdfbiU1AVm_rZNYQQAfU3oYrISBYnWERnGL8nRMSrGRa9OpNlTGh_H7jlJmj9yZjcSovMrKkCP0LeBplZFdvJgj6I9X19cfwp2rfu6t7EGjCwpRPvVz_gLU0FY8sr-AE_aQtm0XXzhygXaKRKL0uGZmkFgdTw',
-    )
-    .then(() => {
-      console.log('done');
-    })
-    .catch(e => console.log('e', e));
+  if (!idToken || !uid) {
+    console.log('| Received data is not correct!!!');
+    console.log('====================================');
+  }
 
-  res.status(200).json({msg: 'password field is required'});
+  if (!idToken) return res.status(400).json({msg: 'idToken field is required'});
+  if (!uid) return res.status(400).json({msg: 'uid field is required'});
+
+  const signInWithGoogleResult = await UserService.signInWithGoogle(
+    idToken,
+    uid,
+  );
+
+  if (signInWithGoogleResult.status !== 400) {
+    res.status(200).json({
+      ...signInWithGoogleResult,
+    });
+  } else {
+    res
+      .status(signInWithGoogleResult.status)
+      .json({msg: signInWithGoogleResult.msg});
+  }
+  console.log('| Sign In Successfully!!!');
+  console.log('====================================');
 };
 
-module.exports = {signIn, signUp, profile, refreshToken, signupwithgoogle};
+module.exports = {
+  signInWithEmail,
+  signUpWithEmail,
+  profile,
+  refreshToken,
+  signInWithGoogle,
+};
