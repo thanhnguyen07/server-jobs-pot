@@ -1,6 +1,7 @@
 const UserModel = require('../models/user.model.js');
 const Jwtoken = require('../middleware/JwToken.js');
 const Firebase = require('../middleware/Firebase.js');
+const FirebaseToken = require('../middleware/FirebaseToken.js');
 
 const findUserByEmail = async email => {
   const result = await UserModel.findOne({
@@ -92,53 +93,6 @@ const signInWithEmail = async (email, password) => {
       status: 400,
       msg: 'Incorrect account information!',
     };
-  }
-};
-
-const signUpWithEmail = async (email, password, userName) => {
-  const findEmailResult = await findUserByEmail(email);
-
-  if (findEmailResult) {
-    return {
-      status: 400,
-      msg: 'Email registered!',
-    };
-  } else {
-    const token = Jwtoken.generateToken({email, password});
-    const refreshToken = Jwtoken.generateRefreshToken({email, password});
-    const type = 'email';
-
-    const newUser = new UserModel({
-      email,
-      password,
-      userName,
-      token,
-      type,
-    });
-    const createUser = await newUser.save();
-    if (createUser) {
-      const resUserData = createUser.toObject();
-
-      resUserData.id = resUserData._id;
-      delete resUserData.token;
-      delete resUserData._id;
-      delete resUserData.password;
-      delete resUserData.createdAt;
-      delete resUserData.updatedAt;
-
-      const resUser = {
-        results: resUserData,
-        token: token,
-        refreshToken: refreshToken,
-        msg: 'Sign Up Successfully!',
-      };
-      return resUser;
-    } else {
-      return {
-        status: 400,
-        msg: 'Something wrong!',
-      };
-    }
   }
 };
 
@@ -327,6 +281,56 @@ const signInWithGoogle = async (idToken, uid) => {
     return {
       status: 403,
       msg: 'Forbidden!',
+    };
+  }
+};
+
+const signUpWithEmail = async req => {
+  const {fullName} = req.body;
+  const userDataFirebase = await FirebaseToken.getUser(req);
+
+  if (userDataFirebase) {
+    const email = userDataFirebase.email;
+    const type = 'email';
+    const userName = fullName;
+    const uid = userDataFirebase.uid;
+
+    const findUserByEmailResult = await findUserByEmail(email);
+    if (findUserByEmailResult) {
+      return {
+        status: 400,
+        res: {msg: 'Email registered!'},
+      };
+    } else {
+      const newUser = new UserModel({
+        email,
+        uid,
+        userName,
+        type,
+      });
+      const createUser = await newUser.save();
+      if (createUser) {
+        const resUserData = createUser.toObject();
+        resUserData.id = resUserData._id;
+        delete resUserData._id;
+        delete resUserData.createdAt;
+        delete resUserData.updatedAt;
+        const res = {
+          results: resUserData,
+          msg: 'SignUp Successfully!',
+        };
+        return {status: 200, res};
+      } else {
+        return {
+          status: 400,
+          res: {msg: 'Something wrong!'},
+        };
+      }
+    }
+  } else {
+    return {
+      status: 400,
+      res: {msg: 'Something wrong. Please re-signup!'},
     };
   }
 };

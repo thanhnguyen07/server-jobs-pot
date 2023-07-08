@@ -4,7 +4,7 @@ const verifyIdToken = async idToken => {
   return await auth
     .getAuth()
     .verifyIdToken(idToken)
-    .then(() => true)
+    .then(decodedToken => decodedToken.uid)
     .catch(() => false);
 };
 

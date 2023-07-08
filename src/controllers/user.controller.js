@@ -31,44 +31,6 @@ const signInWithEmail = async (req, res) => {
   console.log('====================================');
 };
 
-const signUpWithEmail = async (req, res) => {
-  const {email, password, userName} = req?.body;
-
-  console.log('====================================');
-  console.log('| [POST] /user/signup-with-email');
-  console.log('| Email: ', email);
-  console.log('| Password: ', password);
-  console.log('| UserName: ', userName);
-  console.log('| ----------------------------------');
-
-  if (!email || !password || !userName) {
-    console.log('| Received data is not correct!!!');
-    console.log('====================================');
-  }
-
-  if (!email) return res.status(400).json({msg: 'email field is required'});
-  if (!password)
-    return res.status(400).json({msg: 'password field is required'});
-  if (!userName)
-    return res.status(400).json({msg: 'userName field is required'});
-
-  const resultSignUp = await UserService.signUpWithEmail(
-    email,
-    password,
-    userName,
-  );
-
-  console.log('|', resultSignUp.msg);
-  if (resultSignUp.status !== 400) {
-    res.status(200).json({
-      ...resultSignUp,
-    });
-  } else {
-    res.status(resultSignUp.status).json({msg: resultSignUp.msg});
-  }
-  console.log('====================================');
-};
-
 const profile = async (req, res) => {
   console.log('====================================');
   console.log('| [GET] /user/profile');
@@ -150,6 +112,30 @@ const signInWithGoogle = async (req, res) => {
   }
   console.log('| Sign In Successfully!!!');
   console.log('====================================');
+};
+
+const signUpWithEmail = async (req, res) => {
+  const {fullName} = req.body;
+
+  console.log('====================================');
+  console.log('| [POST] /user/signin-with-email');
+  console.log('| fullName: ', fullName);
+  console.log('| ----------------------------------');
+
+  if (!fullName) {
+    console.log('| Received data is not correct!!!');
+    console.log('====================================');
+    return res.status(400).json({msg: 'fullName field is required'});
+  }
+
+  const signInWithEmailResult = await UserService.signUpWithEmail(req);
+
+  console.log('| ', signInWithEmailResult.res.msg);
+  console.log('====================================');
+
+  return res
+    .status(signInWithEmailResult.status)
+    .json(signInWithEmailResult.res);
 };
 
 module.exports = {
