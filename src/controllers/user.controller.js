@@ -38,16 +38,10 @@ const profile = async (req, res) => {
 
   const profileResult = await UserService.profile(req);
 
-  console.log('|', profileResult.msg);
+  console.log('|', profileResult.res.msg);
 
-  if (profileResult.status !== 400) {
-    res.status(200).json({
-      ...profileResult,
-    });
-  } else {
-    res.status(profileResult.status).json({msg: profileResult.msg});
-  }
   console.log('====================================');
+  return res.status(profileResult.status).json(profileResult.res);
 };
 
 const refreshToken = async (req, res) => {

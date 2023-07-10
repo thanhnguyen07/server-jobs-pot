@@ -97,43 +97,33 @@ const signInWithEmail = async (email, password) => {
 };
 
 const profile = async req => {
-  try {
-    const token = Jwtoken.getToken(req);
+  const userDataFirebase = await FirebaseToken.getUser(req);
 
-    const findUserResult = await findUserByToken(token);
+  if (userDataFirebase) {
+    const uid = userDataFirebase.uid;
+    const userDataBase = await findUserByUiid(uid);
 
-    if (findUserResult) {
-      const {email, password} = findUserResult;
-
-      const refreshToken = Jwtoken.generateRefreshToken({email, password});
-
-      const resUserData = findUserResult.toObject();
-
+    if (userDataBase) {
+      const resUserData = userDataBase.toObject();
       resUserData.id = resUserData._id;
-      delete resUserData.token;
       delete resUserData._id;
-      delete resUserData.password;
       delete resUserData.createdAt;
       delete resUserData.updatedAt;
-
-      const resUser = {
+      const res = {
         results: resUserData,
-        token: token,
-        refreshToken: refreshToken,
-        msg: 'Get profile Successfully!',
+        msg: 'SignIn Successfully!',
       };
-
-      return resUser;
+      return {status: 200, res};
     } else {
       return {
         status: 400,
-        msg: 'User does not exist or token is old. Please login again!',
+        res: {msg: 'Account does not exist!'},
       };
     }
-  } catch (error) {
+  } else {
     return {
       status: 400,
-      msg: 'User does not exist or token is old. Please login again!',
+      res: {msg: 'Something wrong. Please re-signIn!'},
     };
   }
 };
