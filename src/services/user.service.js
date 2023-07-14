@@ -72,8 +72,8 @@ const signInWithGoogle = async req => {
   if (userDataFirebase) {
     const uid = userDataFirebase.uid;
     const findIdResult = await findUserByUiid(uid);
-    const email = userFireBaseData.email;
-    const userName = userFireBaseData.displayName;
+    const email = userDataFirebase.email;
+    const userName = userDataFirebase.displayName;
 
     if (findIdResult) {
       const resUserData = findIdResult.toObject();
