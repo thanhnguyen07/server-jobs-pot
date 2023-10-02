@@ -10,6 +10,7 @@ const {SERVICE_ACCOUNT} = require('./src/constants/index.js');
 db.connect().then(() => {
   admin.initializeApp({
     credential: admin.credential.cert(SERVICE_ACCOUNT),
+    storageBucket: 'gs://jobs-pot-6f2b3.appspot.com',
   });
 
   const app = express();

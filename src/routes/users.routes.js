@@ -16,4 +16,16 @@ router.post(
 );
 router.get('/profile', FirebaseToken.authenFireToken, usersController.profile);
 
+router.post(
+  '/update-avatar',
+  FirebaseToken.authenFireToken,
+  usersController.updateAvatar,
+);
+
+router.post(
+  '/update-informations',
+  FirebaseToken.authenFireToken,
+  usersController.updateInformations,
+);
+
 module.exports = router;

@@ -180,10 +180,111 @@ const signUpWithEmail = async req => {
   }
 };
 
+const updateAvatar = async req => {
+  const {avatarLink} = req.body;
+
+  const userDataFirebase = await FirebaseToken.getUser(req);
+  if (userDataFirebase) {
+    const uid = userDataFirebase.uid;
+
+    await UserModel.updateOne(
+      {
+        uid,
+      },
+      {avatarLink},
+    );
+
+    const userDataBase = await findUserByUiid(uid);
+
+    if (userDataBase) {
+      const resUserData = userDataBase.toObject();
+      resUserData.id = resUserData._id;
+      delete resUserData._id;
+      delete resUserData.createdAt;
+      delete resUserData.updatedAt;
+      const res = {
+        results: resUserData,
+        msg: 'Update avatar successfully!',
+      };
+      return {status: 200, res};
+    } else {
+      return {
+        status: 400,
+        res: {msg: 'Account does not exist!'},
+      };
+    }
+  } else {
+    return {
+      status: 400,
+      res: {msg: 'Something wrong. Please re-signIn!'},
+    };
+  }
+};
+
+const updateInformations = async req => {
+  const {userName, dateOfBirth, gender, email, phoneNumber, location} =
+    req.body;
+  const userDataFirebase = await FirebaseToken.getUser(req);
+
+  if (userDataFirebase) {
+    const uid = userDataFirebase.uid;
+
+    if (userName) {
+      await UserModel.updateOne({uid}, {userName});
+    }
+
+    if (dateOfBirth) {
+      await UserModel.updateOne({uid}, {dateOfBirth});
+    }
+    if (gender) {
+      await UserModel.updateOne({uid}, {gender});
+    }
+
+    if (email) {
+      await UserModel.updateOne({uid}, {email});
+    }
+
+    if (phoneNumber) {
+      await UserModel.updateOne({uid}, {phoneNumber});
+    }
+
+    if (location) {
+      await UserModel.updateOne({uid}, {location});
+    }
+
+    const userDataBase = await findUserByUiid(uid);
+
+    if (userDataBase) {
+      const resUserData = userDataBase.toObject();
+      resUserData.id = resUserData._id;
+      delete resUserData._id;
+      delete resUserData.createdAt;
+      delete resUserData.updatedAt;
+      const res = {
+        results: resUserData,
+        msg: 'Update information successfully!',
+      };
+      return {status: 200, res};
+    } else {
+      return {
+        status: 400,
+        res: {msg: 'Account does not exist!'},
+      };
+    }
+  } else {
+    return {
+      status: 400,
+      res: {msg: 'Something wrong. Please re-signIn!'},
+    };
+  }
+};
+
 module.exports = {
   findUserByEmail,
   findUser,
   signUpWithEmail,
   profile,
   signInWithGoogle,
+  updateAvatar,
+  updateInformations,
 };

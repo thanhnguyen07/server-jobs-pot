@@ -8,6 +8,11 @@ const UserSchema = new Schema(
     email: {type: String},
     type: {type: String},
     uid: {type: String},
+    avatarLink: {type: String, default: null},
+    dateOfBirth: {type: String, default: null},
+    gender: {type: String, default: null},
+    phoneNumber: {type: String, default: null},
+    location: {type: String, default: null},
   },
   {timestamps: true, versionKey: false},
 );
