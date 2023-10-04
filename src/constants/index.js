@@ -19,6 +19,9 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 const ACCESS_REFRESH_TOKEN_SECRET = process.env.ACCESS_REFRESH_TOKEN_SECRET;
 
+const BREVO_USER = process.env.BREVO_USER;
+const BREVO_PASS = process.env.BREVO_PASS;
+
 const SERVICE_ACCOUNT = {
   type: 'service_account',
   project_id: process.env.PROJECT_ID,
@@ -41,4 +44,6 @@ module.exports = {
   ACCESS_TOKEN_SECRET,
   ACCESS_REFRESH_TOKEN_SECRET,
   SERVICE_ACCOUNT,
+  BREVO_USER,
+  BREVO_PASS,
 };
