@@ -12,7 +12,7 @@ const getTokenFromReq = req => {
   return null;
 };
 
-const verifyIdToken = async idToken => {
+const verifyToken = async idToken => {
   return await auth
     .getAuth()
     .verifyIdToken(idToken)
@@ -23,7 +23,7 @@ const verifyIdToken = async idToken => {
 const getUser = async req => {
   const idToken = getTokenFromReq(req);
 
-  const uid = await verifyIdToken(idToken);
+  const uid = await verifyToken(idToken);
 
   try {
     return await auth.getAuth().getUser(uid);
@@ -33,7 +33,7 @@ const getUser = async req => {
 };
 
 const getUserFromToken = async token => {
-  const uid = await verifyIdToken(token);
+  const uid = await verifyToken(token);
 
   try {
     return await auth.getAuth().getUser(uid);
@@ -45,7 +45,7 @@ const getUserFromToken = async token => {
 const authenFireToken = async (req, res, next) => {
   const idToken = getTokenFromReq(req);
   if (idToken) {
-    const resVerifyIdToken = await verifyIdToken(idToken);
+    const resVerifyIdToken = await verifyToken(idToken);
 
     if (!resVerifyIdToken) {
       return res.status(401).send({msg: 'Unauthorized'});
@@ -57,7 +57,7 @@ const authenFireToken = async (req, res, next) => {
 };
 
 module.exports = {
-  verifyIdToken,
+  verifyToken,
   getUser,
   authenFireToken,
   getTokenFromReq,

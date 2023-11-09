@@ -1,17 +1,20 @@
+const {UserInfo} = require('firebase-admin/auth');
 const mongoose = require('mongoose');
 
 const {Schema} = mongoose;
 
 const UserSchema = new Schema(
   {
-    userName: {type: String},
+    user_name: {type: String},
     email: {type: String},
-    type: {type: String},
     uid: {type: String},
-    avatarLink: {type: String, default: null},
-    dateOfBirth: {type: String, default: null},
+    email_verified: {type: Boolean, default: false},
+    provider_data: {type: Array, default: []},
+    fcm_token: {type: String, default: null},
+    photo_url: {type: String, default: null},
+    date_of_birth: {type: String, default: null},
     gender: {type: String, default: null},
-    phoneNumber: {type: String, default: null},
+    phone_number: {type: String, default: null},
     location: {type: String, default: null},
   },
   {timestamps: true, versionKey: false},

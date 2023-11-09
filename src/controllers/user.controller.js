@@ -1,4 +1,5 @@
 const UserService = require('../services/user.service.js');
+const Log = require('../utils/log.js');
 
 const profile = async (req, res) => {
   console.log('====================================');
@@ -54,15 +55,18 @@ const updateInformations = async (req, res) => {
     .json(updateInformationsResult.res);
 };
 
-const signInWithGoogle = async (req, res) => {
-  console.log('====================================');
-  console.log('| [GET] /user/signin-with-google');
-  console.log('| ----------------------------------');
+const signInWithFirebase = async (req, res) => {
+  const {token_firebase} = req.body;
 
-  const signInWithGoogleResult = await UserService.signInWithGoogle(req);
+  const signInWithGoogleResult = await UserService.signInWithFirebase(
+    token_firebase,
+  );
 
-  console.log('| ', signInWithGoogleResult.res.msg);
-  console.log('====================================');
+  Log.request({
+    req: req,
+    msg: signInWithGoogleResult?.res?.msg,
+    code: signInWithGoogleResult.status,
+  });
 
   return res
     .status(signInWithGoogleResult.status)
@@ -70,27 +74,50 @@ const signInWithGoogle = async (req, res) => {
 };
 
 const signUpWithEmail = async (req, res) => {
-  const {fullName} = req.body;
+  const {user_name, token_firebase} = req.body;
 
-  console.log('====================================');
-  console.log('| [POST] /user/signup-with-email');
-  console.log('| fullName: ', fullName);
-  console.log('| ----------------------------------');
+  const signUpWithEmailResult = await UserService.signUpWithEmail(
+    user_name,
+    token_firebase,
+  );
 
-  if (!fullName) {
-    console.log('| Received data is not correct!!!');
-    console.log('====================================');
-    return res.status(400).json({msg: 'fullName field is required'});
-  }
-
-  const signInWithEmailResult = await UserService.signUpWithEmail(req);
-
-  console.log('| ', signInWithEmailResult.res.msg);
-  console.log('====================================');
+  Log.request({
+    req: req,
+    msg: signUpWithEmailResult?.res?.msg,
+    code: signUpWithEmailResult.status,
+  });
 
   return res
-    .status(signInWithEmailResult.status)
-    .json(signInWithEmailResult.res);
+    .status(signUpWithEmailResult.status)
+    .json(signUpWithEmailResult.res);
+};
+
+const sendVerificationCode = async (req, res) => {
+  const {email} = req.body;
+
+  const sendResult = await UserService.sendVerificationCode(email);
+
+  Log.request({
+    req: req,
+    msg: sendResult?.msg,
+    code: sendResult.status,
+  });
+
+  return res.status(sendResult.status).json(sendResult.res);
+};
+
+const verifyCode = async (req, res) => {
+  const {code} = req.body;
+
+  const verifyCodeResult = await UserService.verifyCodeService(code);
+
+  Log.request({
+    req: req,
+    msg: verifyCodeResult?.res?.msg,
+    code: verifyCodeResult.status,
+  });
+
+  return res.status(verifyCodeResult.status).json(verifyCodeResult.res);
 };
 
 const updateAvatar = async (req, res) => {
@@ -118,7 +145,9 @@ const updateAvatar = async (req, res) => {
 module.exports = {
   signUpWithEmail,
   profile,
-  signInWithGoogle,
   updateAvatar,
   updateInformations,
+  signInWithFirebase,
+  sendVerificationCode,
+  verifyCode,
 };
