@@ -1,5 +1,4 @@
 const PostModel = require('../models/post.model.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
 
 const create = async () => {
   const result = await JobModel.find({});

@@ -2,15 +2,13 @@ const UserService = require('../services/user.service.js');
 const Log = require('../utils/log.js');
 
 const profile = async (req, res) => {
-  console.log('====================================');
-  console.log('| [GET] /user/profile');
-  console.log('| ----------------------------------');
-
   const profileResult = await UserService.profile(req);
 
-  console.log('|', profileResult.res.msg);
-
-  console.log('====================================');
+  Log.request({
+    req: req,
+    msg: profileResult?.res?.msg,
+    code: profileResult.status,
+  });
   return res.status(profileResult.status).json(profileResult.res);
 };
 

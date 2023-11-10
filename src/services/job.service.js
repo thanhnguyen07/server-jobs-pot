@@ -1,5 +1,4 @@
 const JobModel = require('../models/job.model.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
 
 const summary = async () => {
   const result = await JobModel.find({});

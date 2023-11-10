@@ -161,7 +161,7 @@ const sendVerificationCode = async email => {
       if (checkDataResutl) {
         const sendResult = await sendEmail(verificationCode, email);
 
-        if (sendResult.status) {
+        if (sendResult?.status) {
           return {
             status: 200,
             res: {msg: 'Email sent successfully!'},
@@ -181,9 +181,9 @@ const sendVerificationCode = async email => {
 
 const verifyCodeService = async code => {
   const findCodeResult = await VerificationCodeModel.findOne({code});
-  const email = findCodeResult.email;
 
   if (findCodeResult) {
+    const email = findCodeResult?.email;
     const lastUpdatedTime = findCodeResult.updatedAt;
     const codeDataBase = findCodeResult.code;
     const hasPassed = hasPassed2Minutes(lastUpdatedTime);
@@ -203,6 +203,8 @@ const verifyCodeService = async code => {
             status: 400,
             res: {msg: 'Something went wrong!'},
           };
+        } else {
+          Firebase.updateVerifyEmailUser(findUserByEmail.uid);
         }
       }
       return {
@@ -252,35 +254,39 @@ const findUser = async (email, password) => {
 };
 
 const profile = async req => {
-  const userDataFirebase = await FirebaseToken.getUser(req);
+  const {id} = req.query;
 
-  if (userDataFirebase) {
-    const uid = userDataFirebase.uid;
-    const userDataBase = await findUserByUid(uid);
+  const userDataBase = await findUserById(id);
 
-    if (userDataBase) {
-      const resUserData = userDataBase.toObject();
-      resUserData.id = resUserData._id;
-      delete resUserData._id;
-      delete resUserData.createdAt;
-      delete resUserData.updatedAt;
-      const res = {
-        results: resUserData,
-        msg: 'SignIn Successfully!',
-      };
-      return {status: 200, res};
-    } else {
-      return {
-        status: 400,
-        res: {msg: 'Account does not exist!'},
-      };
-    }
+  if (userDataBase) {
+    const resUserData = userDataBase.toObject();
+
+    const {token, refresh_token} = JWToken.createTokens({
+      uid: resUserData.uid,
+    });
+
+    delete resUserData.createdAt;
+    delete resUserData.updatedAt;
+
+    const res = {
+      results: resUserData,
+      token,
+      refresh_token,
+      msg: 'Get profile Successfully!',
+    };
+    return {status: 200, res};
   } else {
     return {
       status: 400,
-      res: {msg: 'Something wrong. Please re-signIn!'},
+      res: {msg: 'Account does not exist!'},
     };
   }
+  // } else {
+  //   return {
+  //     status: 400,
+  //     res: {msg: 'Something wrong. Please re-signIn!'},
+  //   };
+  // }
 };
 
 const createUserFormFirebaseData = async (userData, userName) => {

@@ -7,6 +7,7 @@ const {
   signInWithSocialValidateSchema,
   sendVerificationCodeValidateSchema,
   verifyCodeSchema,
+  profileValidateSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 
@@ -29,13 +30,19 @@ router.post(
   validateParams(sendVerificationCodeValidateSchema),
   usersController.sendVerificationCode,
 );
-router.post(
+router.put(
   '/verify-code',
   validateParams(verifyCodeSchema),
   usersController.verifyCode,
 );
 
-router.get('/profile', FirebaseToken.authenFireToken, usersController.profile);
+router.use(JWToken.verifyToken);
+
+router.get(
+  '/profile',
+  validateParams(profileValidateSchema),
+  usersController.profile,
+);
 
 router.post(
   '/update-avatar',

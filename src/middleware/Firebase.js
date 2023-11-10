@@ -56,10 +56,25 @@ const authenFireToken = async (req, res, next) => {
   }
 };
 
+const updateVerifyEmailUser = async uid => {
+  return await auth
+    .getAuth()
+    .updateUser(uid, {
+      emailVerified: true,
+    })
+    .then(userRecord => {
+      return true;
+    })
+    .catch(error => {
+      return false;
+    });
+};
+
 module.exports = {
   verifyToken,
   getUser,
   authenFireToken,
   getTokenFromReq,
   getUserFromToken,
+  updateVerifyEmailUser,
 };
