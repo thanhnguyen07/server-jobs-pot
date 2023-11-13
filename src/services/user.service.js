@@ -1,5 +1,4 @@
 const UserModel = require('../models/user.model.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
 const Firebase = require('../middleware/Firebase.js');
 const JWToken = require('../middleware/JWToken.js');
 const {createTransport} = require('nodemailer');
@@ -448,42 +447,40 @@ const signUpWithEmail = async (user_name, token_firebase) => {
 };
 
 const updateAvatar = async req => {
-  const {avatarLink} = req.body;
+  const {image_url, id} = req.body;
 
-  const userDataFirebase = await FirebaseToken.getUser(req);
-  if (userDataFirebase) {
-    const uid = userDataFirebase.uid;
-
-    await UserModel.updateOne(
+  const userData = await findUserById(id);
+  if (userData) {
+    const updateAvatarRes = await UserModel.updateOne(
       {
-        uid,
+        _id: id,
       },
-      {avatarLink},
+      {photo_url: image_url},
     );
 
-    const userDataBase = await findUserByUid(uid);
+    if (updateAvatarRes.acknowledged) {
+      const userDataNew = await findUserById(id);
+      if (userDataNew) {
+        const resDataUser = userDataNew.toObject();
+        delete resDataUser.createdAt;
+        delete resDataUser.updatedAt;
 
-    if (userDataBase) {
-      const resUserData = userDataBase.toObject();
-      resUserData.id = resUserData._id;
-      delete resUserData._id;
-      delete resUserData.createdAt;
-      delete resUserData.updatedAt;
-      const res = {
-        results: resUserData,
-        msg: 'Update avatar successfully!',
-      };
-      return {status: 200, res};
-    } else {
-      return {
-        status: 400,
-        res: {msg: 'Account does not exist!'},
-      };
+        const res = {
+          results: resDataUser,
+          msg: 'Update avatar successfully!',
+        };
+        return {status: 200, res};
+      }
     }
+
+    return {
+      status: 400,
+      res: {msg: 'Something wrong!'},
+    };
   } else {
     return {
       status: 400,
-      res: {msg: 'Something wrong. Please re-signIn!'},
+      res: {msg: 'Account does not exist!'},
     };
   }
 };
@@ -491,7 +488,7 @@ const updateAvatar = async req => {
 const updateInformations = async req => {
   const {userName, dateOfBirth, gender, email, phoneNumber, location} =
     req.body;
-  const userDataFirebase = await FirebaseToken.getUser(req);
+  const userDataFirebase = await Firebase.getUser(req);
 
   if (userDataFirebase) {
     const uid = userDataFirebase.uid;

@@ -119,25 +119,15 @@ const verifyCode = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const {avatarLink} = req.body;
-  console.log('====================================');
-  console.log('| [POST] /user/update-image');
-  console.log('| Avatar Link: ', avatarLink);
-  console.log('| ----------------------------------');
-
-  if (!avatarLink) {
-    console.log('| Avatar Link not found');
-    console.log('====================================');
-    return res.status(400).send('Avatar Link is required!');
-  }
-
   const uploadImageResult = await UserService.updateAvatar(req);
 
-  if (uploadImageResult.status) {
-    console.log('| ', uploadImageResult?.res?.msg);
-    console.log('====================================');
-    return res.status(uploadImageResult?.status).json(uploadImageResult?.res);
-  }
+  Log.request({
+    req: req,
+    msg: uploadImageResult?.msg,
+    code: uploadImageResult.status,
+  });
+
+  return res.status(uploadImageResult?.status).json(uploadImageResult?.res);
 };
 
 module.exports = {

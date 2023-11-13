@@ -54,3 +54,8 @@ export const customTokenValidateSchema = Joi.object({
     .regex(/[smhd]/)
     .required(),
 });
+
+export const updateAvatarSchema = Joi.object({
+  image_url: validateStringRequired(),
+  id: validateStringRequired(),
+});

@@ -1,9 +1,10 @@
 const express = require('express');
 const jobsController = require('../controllers/job.controller.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
+const JWToken = require('../middleware/JWToken.js');
 
 const router = express.Router();
 
-router.get('/summary', FirebaseToken.authenFireToken, jobsController.summary);
+router.use(JWToken.verifyToken);
+router.get('/summary', jobsController.summary);
 
 module.exports = router;

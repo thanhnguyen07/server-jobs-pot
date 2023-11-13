@@ -1,6 +1,5 @@
 const express = require('express');
 const usersController = require('../controllers/user.controller.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
 const validateParams = require('../middleware/ValidateParams.js').default;
 const {
   signUpWithEmailValidateSchema,
@@ -8,6 +7,7 @@ const {
   sendVerificationCodeValidateSchema,
   verifyCodeSchema,
   profileValidateSchema,
+  updateAvatarSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 
@@ -37,23 +37,16 @@ router.put(
 );
 
 router.use(JWToken.verifyToken);
-
 router.get(
   '/profile',
   validateParams(profileValidateSchema),
   usersController.profile,
 );
-
-router.post(
+router.put(
   '/update-avatar',
-  FirebaseToken.authenFireToken,
+  validateParams(updateAvatarSchema),
   usersController.updateAvatar,
 );
-
-router.post(
-  '/update-informations',
-  FirebaseToken.authenFireToken,
-  usersController.updateInformations,
-);
+router.post('/update-informations', usersController.updateInformations);
 
 module.exports = router;

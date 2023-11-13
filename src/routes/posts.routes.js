@@ -1,9 +1,10 @@
 const express = require('express');
 const postsController = require('../controllers/post.controller.js');
-const FirebaseToken = require('../middleware/FirebaseToken.js');
+const JWToken = require('../middleware/JWToken.js');
 
 const router = express.Router();
 
-router.get('/create', FirebaseToken.authenFireToken, postsController.create);
+router.use(JWToken.verifyToken);
+router.get('/create', postsController.create);
 
 module.exports = router;
