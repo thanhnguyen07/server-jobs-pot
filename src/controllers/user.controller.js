@@ -12,6 +12,17 @@ const profile = async (req, res) => {
   return res.status(profileResult.status).json(profileResult.res);
 };
 
+const refreshToken = async (req, res) => {
+  const refreshTokenResult = await UserService.refreshToken(req);
+
+  Log.request({
+    req: req,
+    msg: refreshTokenResult?.res?.msg,
+    code: refreshTokenResult.status,
+  });
+  return res.status(refreshTokenResult.status).json(refreshTokenResult.res);
+};
+
 const updateInformations = async (req, res) => {
   const {userName, dateOfBirth, gender, email, phoneNumber, location} =
     req.body;
@@ -130,6 +141,18 @@ const updateAvatar = async (req, res) => {
   return res.status(uploadImageResult?.status).json(uploadImageResult?.res);
 };
 
+const customToken = async (req, res) => {
+  const customTokenResult = await UserService.customToken(req);
+
+  Log.request({
+    req: req,
+    msg: customTokenResult?.res?.msg,
+    code: customTokenResult.status,
+  });
+
+  return res.status(customTokenResult.status).json(customTokenResult.res);
+};
+
 module.exports = {
   signUpWithEmail,
   profile,
@@ -138,4 +161,6 @@ module.exports = {
   signInWithFirebase,
   sendVerificationCode,
   verifyCode,
+  refreshToken,
+  customToken,
 };

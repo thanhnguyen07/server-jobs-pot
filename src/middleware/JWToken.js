@@ -66,6 +66,13 @@ const verifyRefreshToken = token => {
   });
 };
 
+const createCustomToken = expiresIn => {
+  const token = jwt.sign({data: 'custom token'}, ACCESS_TOKEN_SECRET, {
+    expiresIn: expiresIn,
+  });
+  return token;
+};
+
 module.exports = {
   createToken,
   createRefreshToken,
@@ -74,4 +81,5 @@ module.exports = {
   getTokenFromRequest,
   verifyRefreshToken,
   createTokens,
+  createCustomToken,
 };

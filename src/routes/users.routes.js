@@ -8,6 +8,8 @@ const {
   verifyCodeSchema,
   profileValidateSchema,
   updateAvatarSchema,
+  refreshTokenValidateSchema,
+  customTokenValidateSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 
@@ -34,6 +36,18 @@ router.put(
   '/verify-code',
   validateParams(verifyCodeSchema),
   usersController.verifyCode,
+);
+
+router.post(
+  '/refresh-token',
+  validateParams(refreshTokenValidateSchema),
+  usersController.refreshToken,
+);
+
+router.post(
+  '/custom-token',
+  validateParams(customTokenValidateSchema),
+  usersController.customToken,
 );
 
 router.use(JWToken.verifyToken);

@@ -485,6 +485,30 @@ const updateAvatar = async req => {
   }
 };
 
+const refreshToken = async req => {
+  const {refresh_token} = req.body;
+
+  const verifyRefreshTokenResult = JWToken.verifyRefreshToken(refresh_token);
+
+  if (verifyRefreshTokenResult) {
+    const {token, refresh_token} = JWToken.createTokens({
+      data: refresh_token,
+    });
+
+    const res = {
+      token,
+      refresh_token,
+      msg: 'Refresh token Successfully!',
+    };
+    return {status: 200, res};
+  } else {
+    return {
+      status: 403,
+      res: {msg: 'Forbidden'},
+    };
+  }
+};
+
 const updateInformations = async req => {
   const {userName, dateOfBirth, gender, email, phoneNumber, location} =
     req.body;
@@ -543,6 +567,20 @@ const updateInformations = async req => {
   }
 };
 
+const customToken = async req => {
+  const {expiresIn} = req.body;
+
+  const newToken = JWToken.createCustomToken(expiresIn);
+
+  const res = {
+    results: {
+      custom_token: newToken,
+    },
+    msg: 'Create custom token Successfully!',
+  };
+  return {status: 200, res};
+};
+
 module.exports = {
   findUserByEmail,
   findUser,
@@ -553,4 +591,6 @@ module.exports = {
   signInWithFirebase,
   sendVerificationCode,
   verifyCodeService,
+  refreshToken,
+  customToken,
 };
