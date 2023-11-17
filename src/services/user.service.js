@@ -280,12 +280,6 @@ const profile = async req => {
       res: {msg: 'Account does not exist!'},
     };
   }
-  // } else {
-  //   return {
-  //     status: 400,
-  //     res: {msg: 'Something wrong. Please re-signIn!'},
-  //   };
-  // }
 };
 
 const createUserFormFirebaseData = async (userData, userName) => {
