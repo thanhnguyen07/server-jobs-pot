@@ -440,8 +440,8 @@ const signUpWithEmail = async (user_name, token_firebase) => {
   }
 };
 
-const updateAvatar = async req => {
-  const {image_url, id} = req.body;
+const updateImage = async req => {
+  const {image_url, id, type} = req.body;
 
   const userData = await findUserById(id);
   if (userData) {
@@ -449,7 +449,7 @@ const updateAvatar = async req => {
       {
         _id: id,
       },
-      {photo_url: image_url},
+      type == 'avatar' ? {photo_url: image_url} : {background_url: image_url},
     );
 
     if (updateAvatarRes.acknowledged) {
@@ -575,16 +575,51 @@ const customToken = async req => {
   return {status: 200, res};
 };
 
+const checkAccount = async req => {
+  const {provider_id, email} = req.body;
+
+  const findUserByEmailRes = await findUserByEmail(email);
+  if (findUserByEmailRes) {
+    const userData = findUserByEmailRes.toObject();
+    const provider_data = userData.provider_data;
+
+    let check = false;
+    provider_data.forEach(provider => {
+      if (provider.providerId === provider_id) {
+        check = true;
+      }
+    });
+
+    if (check) {
+      const res = {
+        msg: 'Successfully!',
+      };
+      return {status: 200, res};
+    } else {
+      const res = {
+        msg: 'Failure!',
+      };
+      return {status: 400, res};
+    }
+  } else {
+    const res = {
+      msg: 'Successfully!',
+    };
+    return {status: 200, res};
+  }
+};
+
 module.exports = {
   findUserByEmail,
   findUser,
   signUpWithEmail,
   profile,
-  updateAvatar,
+  updateImage,
   updateInformations,
   signInWithFirebase,
   sendVerificationCode,
   verifyCodeService,
   refreshToken,
   customToken,
+  checkAccount,
 };

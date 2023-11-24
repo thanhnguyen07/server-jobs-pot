@@ -10,10 +10,17 @@ const {
   updateAvatarSchema,
   refreshTokenValidateSchema,
   customTokenValidateSchema,
+  checkAccountValidateSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 
 const router = express.Router();
+
+router.post(
+  '/check-account',
+  validateParams(checkAccountValidateSchema),
+  usersController.checkAccount,
+);
 
 router.post(
   '/signin-with-firebase',
@@ -56,11 +63,13 @@ router.get(
   validateParams(profileValidateSchema),
   usersController.profile,
 );
+
 router.put(
-  '/update-avatar',
+  '/update-image',
   validateParams(updateAvatarSchema),
-  usersController.updateAvatar,
+  usersController.updateImage,
 );
+
 router.post('/update-informations', usersController.updateInformations);
 
 module.exports = router;

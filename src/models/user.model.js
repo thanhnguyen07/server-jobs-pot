@@ -12,6 +12,7 @@ const UserSchema = new Schema(
     provider_data: {type: Array, default: []},
     fcm_token: {type: String, default: null},
     photo_url: {type: String, default: null},
+    background_url: {type: String, default: null},
     date_of_birth: {type: String, default: null},
     gender: {type: String, default: null},
     phone_number: {type: String, default: null},

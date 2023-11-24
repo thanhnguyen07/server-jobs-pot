@@ -58,4 +58,10 @@ export const customTokenValidateSchema = Joi.object({
 export const updateAvatarSchema = Joi.object({
   image_url: validateStringRequired(),
   id: validateStringRequired(),
+  type: validateStringRequired(),
+});
+
+export const checkAccountValidateSchema = Joi.object({
+  provider_id: validateStringRequired(),
+  email: validateStringRequired(),
 });

@@ -1,21 +1,31 @@
 const express = require('express');
-// const helmet = require('helmet');
 const cors = require('cors');
 const db = require('./src/configs/db.config.js');
 const apiRoute = require('./src/routes/router.js');
 const {PORT} = require('./src/constants/index.js');
 const admin = require('firebase-admin');
-const {SERVICE_ACCOUNT} = require('./src/constants/index.js');
+const {
+  SERVICE_ACCOUNT,
+  STORAGE_BUCKET,
+  SERVICE_ACCOUNT_DEV,
+  STORAGE_BUCKET_DEV,
+} = require('./src/constants/index.js');
 
-db.connect().then(() => {
+db.connect().then(async () => {
   admin.initializeApp({
-    credential: admin.credential.cert(SERVICE_ACCOUNT),
-    storageBucket: 'gs://jobs-pot-6f2b3.appspot.com',
+    credential: admin.credential.cert(
+      process.env.NODE_ENV === 'development'
+        ? SERVICE_ACCOUNT_DEV
+        : SERVICE_ACCOUNT,
+    ),
+    storageBucket:
+      process.env.NODE_ENV === 'development'
+        ? STORAGE_BUCKET
+        : STORAGE_BUCKET_DEV,
   });
 
   const app = express();
 
-  // app.use(helmet());
   app.use(cors());
 
   app.use(express.urlencoded({extended: true}));

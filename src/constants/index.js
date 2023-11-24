@@ -32,6 +32,7 @@ const MAILJS_TEMPLATE_ID_2 = process.env.MAILJS_TEMPLATE_ID_2;
 const MAILJS_PUBLIC_KEY_2 = process.env.MAILJS_PUBLIC_KEY_2;
 const MAILJS_PRIVATE_KEY_2 = process.env.MAILJS_PRIVATE_KEY_2;
 
+const STORAGE_BUCKET = process.env.STORAGE_BUCKET;
 const SERVICE_ACCOUNT = {
   type: 'service_account',
   project_id: process.env.PROJECT_ID,
@@ -40,11 +41,25 @@ const SERVICE_ACCOUNT = {
   client_email: process.env.CLIENT_EMAIL,
   client_id: process.env.CLIENT_ID,
   auth_uri: process.env.AUTH_URI,
+  client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
   token_uri: process.env.TOKEN_URI,
   auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
   universe_domain: process.env.UNIVERSE_DOMAIN,
 };
+const SERVICE_ACCOUNT_DEV = {
+  type: 'service_account',
+  project_id: process.env.PROJECT_ID_DEV,
+  private_key_id: process.env.PRIVATE_KEY_ID_DEV,
+  private_key: process.env.PRIVATE_KEY_DEV,
+  client_email: process.env.CLIENT_EMAIL_DEV,
+  client_id: process.env.CLIENT_ID_DEV,
+  auth_uri: process.env.AUTH_URI_DEV,
+  client_x509_cert_url: process.env.CLIENT_X509_CERT_URL_DEV,
+  token_uri: process.env.TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
+  universe_domain: process.env.UNIVERSE_DOMAIN,
+};
+const STORAGE_BUCKET_DEV = process.env.STORAGE_BUCKET_DEV;
 
 module.exports = {
   URI_MONGODB,
@@ -53,7 +68,10 @@ module.exports = {
   REFRESH_TOKEN_EXPIRES_TIME,
   ACCESS_TOKEN_SECRET,
   ACCESS_REFRESH_TOKEN_SECRET,
+  STORAGE_BUCKET,
   SERVICE_ACCOUNT,
+  SERVICE_ACCOUNT_DEV,
+  STORAGE_BUCKET_DEV,
   BREVO_USER,
   BREVO_PASS,
   MAILJS_SERVICE_ID_1,

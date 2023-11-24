@@ -129,8 +129,8 @@ const verifyCode = async (req, res) => {
   return res.status(verifyCodeResult.status).json(verifyCodeResult.res);
 };
 
-const updateAvatar = async (req, res) => {
-  const uploadImageResult = await UserService.updateAvatar(req);
+const updateImage = async (req, res) => {
+  const uploadImageResult = await UserService.updateImage(req);
 
   Log.request({
     req: req,
@@ -153,14 +153,27 @@ const customToken = async (req, res) => {
   return res.status(customTokenResult.status).json(customTokenResult.res);
 };
 
+const checkAccount = async function (req, res) {
+  const checkAccountResult = await UserService.checkAccount(req);
+
+  Log.request({
+    req: req,
+    msg: checkAccountResult?.res?.msg,
+    code: checkAccountResult.status,
+  });
+
+  return res.status(checkAccountResult.status).json(checkAccountResult.res);
+};
+
 module.exports = {
   signUpWithEmail,
   profile,
-  updateAvatar,
+  updateImage,
   updateInformations,
   signInWithFirebase,
   sendVerificationCode,
   verifyCode,
   refreshToken,
   customToken,
+  checkAccount,
 };
