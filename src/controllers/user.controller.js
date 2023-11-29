@@ -141,16 +141,28 @@ const updateImage = async (req, res) => {
   return res.status(uploadImageResult?.status).json(uploadImageResult?.res);
 };
 
-const customToken = async (req, res) => {
-  const customTokenResult = await UserService.customToken(req);
+const accountLink = async (req, res) => {
+  const accountLinkResult = await UserService.accountLink(req);
 
   Log.request({
     req: req,
-    msg: customTokenResult?.res?.msg,
-    code: customTokenResult.status,
+    msg: accountLinkResult?.res?.msg,
+    code: accountLinkResult.status,
   });
 
-  return res.status(customTokenResult.status).json(customTokenResult.res);
+  return res.status(accountLinkResult.status).json(accountLinkResult.res);
+};
+
+const accountUnLink = async (req, res) => {
+  const accountUnLinkResult = await UserService.accountUnLink(req);
+
+  Log.request({
+    req: req,
+    msg: accountUnLinkResult?.res?.msg,
+    code: accountUnLinkResult.status,
+  });
+
+  return res.status(accountUnLinkResult.status).json(accountUnLinkResult.res);
 };
 
 const checkAccount = async function (req, res) {
@@ -174,6 +186,7 @@ module.exports = {
   sendVerificationCode,
   verifyCode,
   refreshToken,
-  customToken,
+  accountLink,
   checkAccount,
+  accountUnLink,
 };

@@ -9,10 +9,13 @@ const {
   profileValidateSchema,
   updateAvatarSchema,
   refreshTokenValidateSchema,
-  customTokenValidateSchema,
+  accountLinkSchema,
   checkAccountValidateSchema,
+  accountUnLinkSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
+const multer = require('multer');
+const upload = multer({storage: multer.memoryStorage()});
 
 const router = express.Router();
 
@@ -34,6 +37,8 @@ router.post(
   usersController.signUpWithEmail,
 );
 
+// Require Token
+router.use(JWToken.verifyToken);
 router.post(
   '/send-verification-code',
   validateParams(sendVerificationCodeValidateSchema),
@@ -44,32 +49,34 @@ router.put(
   validateParams(verifyCodeSchema),
   usersController.verifyCode,
 );
-
 router.post(
   '/refresh-token',
   validateParams(refreshTokenValidateSchema),
   usersController.refreshToken,
 );
-
-router.post(
-  '/custom-token',
-  validateParams(customTokenValidateSchema),
-  usersController.customToken,
-);
-
-router.use(JWToken.verifyToken);
 router.get(
   '/profile',
   validateParams(profileValidateSchema),
   usersController.profile,
 );
+router.put(
+  '/account-link',
+  validateParams(accountLinkSchema),
+  usersController.accountLink,
+);
+router.put(
+  '/account-unlink',
+  validateParams(accountUnLinkSchema),
+  usersController.accountUnLink,
+);
 
+router.post('/update-informations', usersController.updateInformations);
+
+router.use(upload.any());
 router.put(
   '/update-image',
   validateParams(updateAvatarSchema),
   usersController.updateImage,
 );
-
-router.post('/update-informations', usersController.updateInformations);
 
 module.exports = router;

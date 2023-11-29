@@ -3,7 +3,12 @@ const Firebase = require('../middleware/Firebase.js');
 const JWToken = require('../middleware/JWToken.js');
 const {createTransport} = require('nodemailer');
 const emailjs = require('@emailjs/nodejs');
-const {generateRandomCode, hasPassed2Minutes} = require('../utils/index.js');
+const {
+  generateRandomCode,
+  hasPassed2Minutes,
+  getFileName,
+  getCurrentTimeUTC,
+} = require('../utils/index.js');
 const {
   BREVO_PASS,
   BREVO_USER,
@@ -17,6 +22,7 @@ const {
   MAILJS_TEMPLATE_ID_2,
 } = require('../constants/index.js');
 const VerificationCodeModel = require('../models/verificationCode.model.js');
+const admin = require('firebase-admin');
 
 const sendByBrevoService = async (verificationCode, email) => {
   const transporter = createTransport({
@@ -123,22 +129,14 @@ const checkDataAndUpdateVerificationCode = async (email, verificationCode) => {
       {email},
       {code: verificationCode},
     );
-    if (updateVerificationCodeResult.acknowledged) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!updateVerificationCodeResult.acknowledged;
   } else {
     const newVerificationCodeData = new VerificationCodeModel({
       email,
       code: verificationCode,
     });
     const newData = await newVerificationCodeData.save();
-    if (newData) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!newData;
   }
 };
 
@@ -441,29 +439,95 @@ const signUpWithEmail = async (user_name, token_firebase) => {
 };
 
 const updateImage = async req => {
-  const {image_url, id, type} = req.body;
+  const {id} = req.body;
+  const imageFile = req.files[0];
+  const fileName = imageFile.originalname;
+  const isAvatar = fileName.includes('avatar');
 
   const userData = await findUserById(id);
-  if (userData) {
+
+  if (!userData) {
+    return {
+      status: 400,
+      res: {msg: 'Account does not exist!'},
+    };
+  }
+
+  if (!imageFile) {
+    return {
+      status: 400,
+      res: {msg: 'No files found!'},
+    };
+  }
+
+  const bucket = admin.storage().bucket();
+
+  if (userData.photo_url && userData.background_url) {
+    const filePathOld = `user_images/${id}/${getFileName(
+      isAvatar ? userData.photo_url : userData.background_url,
+    )}`;
+
+    await bucket
+      .file(filePathOld)
+      .delete()
+      .catch(_ => {
+        console.error('Error deleting old file');
+      });
+  }
+
+  const currentDate = getCurrentTimeUTC();
+  const filePath = `user_images/${id}/${currentDate}_${fileName}`;
+
+  const blob = bucket.file(filePath);
+
+  const blobWriter = blob.createWriteStream({
+    metadata: {
+      contentType: imageFile.mimetype,
+    },
+  });
+
+  const finishPromise = new Promise((resolve, reject) => {
+    blobWriter.on('error', _ => {
+      reject(new Error('Something went wrong!'));
+    });
+
+    blobWriter.on('finish', async () => {
+      resolve();
+    });
+  });
+
+  blobWriter.end(imageFile.buffer);
+
+  try {
+    await finishPromise;
+
+    const downloadUrl = await blob.getSignedUrl({
+      action: 'read',
+      expires: '01-01-2100',
+    });
+
     const updateAvatarRes = await UserModel.updateOne(
       {
         _id: id,
       },
-      type == 'avatar' ? {photo_url: image_url} : {background_url: image_url},
+      isAvatar ? {photo_url: downloadUrl[0]} : {background_url: downloadUrl[0]},
     );
 
     if (updateAvatarRes.acknowledged) {
       const userDataNew = await findUserById(id);
+
       if (userDataNew) {
         const resDataUser = userDataNew.toObject();
         delete resDataUser.createdAt;
         delete resDataUser.updatedAt;
 
-        const res = {
-          results: resDataUser,
-          msg: 'Update avatar successfully!',
+        return {
+          status: 200,
+          res: {
+            results: resDataUser,
+            msg: 'Update avatar successfully!',
+          },
         };
-        return {status: 200, res};
       }
     }
 
@@ -471,10 +535,10 @@ const updateImage = async req => {
       status: 400,
       res: {msg: 'Something wrong!'},
     };
-  } else {
+  } catch (error) {
     return {
       status: 400,
-      res: {msg: 'Account does not exist!'},
+      res: {msg: 'Something wrong!'},
     };
   }
 };
@@ -561,18 +625,94 @@ const updateInformations = async req => {
   }
 };
 
-const customToken = async req => {
-  const {expiresIn} = req.body;
+const accountLink = async req => {
+  const {provider_data, id} = req.body;
 
-  const newToken = JWToken.createCustomToken(expiresIn);
+  const userData = await findUserById(id);
 
-  const res = {
-    results: {
-      custom_token: newToken,
-    },
-    msg: 'Create custom token Successfully!',
+  if (!userData) {
+    return {
+      status: 400,
+      res: {msg: 'Account does not exist!'},
+    };
+  }
+  const userDataObject = userData.toObject();
+
+  const providerDataNew = [...userDataObject.provider_data];
+
+  providerDataNew.push(provider_data);
+
+  const updateProviderData = await UserModel.updateOne(
+    {_id: id},
+    {provider_data: providerDataNew},
+  );
+
+  if (updateProviderData.acknowledged) {
+    const userDataNew = await findUserById(id);
+
+    if (userDataNew) {
+      const resDataUser = userDataNew.toObject();
+      delete resDataUser.createdAt;
+      delete resDataUser.updatedAt;
+
+      return {
+        status: 200,
+        res: {
+          results: resDataUser,
+          msg: 'Account link successfully!',
+        },
+      };
+    }
+  }
+  return {
+    status: 400,
+    res: {msg: 'Something wrong!'},
   };
-  return {status: 200, res};
+};
+
+const accountUnLink = async req => {
+  const {provider_id, id} = req.body;
+
+  const userData = await findUserById(id);
+
+  if (!userData) {
+    return {
+      status: 400,
+      res: {msg: 'Account does not exist!'},
+    };
+  }
+  const userDataObject = userData.toObject();
+
+  const providerDataNew = userDataObject.provider_data.filter(
+    e => e.providerId != provider_id,
+  );
+
+  const updateProviderData = await UserModel.updateOne(
+    {_id: id},
+    {provider_data: providerDataNew},
+  );
+
+  if (updateProviderData.acknowledged) {
+    const userDataNew = await findUserById(id);
+
+    if (userDataNew) {
+      const resDataUser = userDataNew.toObject();
+      delete resDataUser.createdAt;
+      delete resDataUser.updatedAt;
+
+      return {
+        status: 200,
+        res: {
+          results: resDataUser,
+          msg: 'Account unlink successfully!',
+        },
+      };
+    }
+  }
+  return {
+    status: 400,
+    res: {msg: 'Something wrong!'},
+  };
 };
 
 const checkAccount = async req => {
@@ -620,6 +760,7 @@ module.exports = {
   sendVerificationCode,
   verifyCodeService,
   refreshToken,
-  customToken,
+  accountLink,
   checkAccount,
+  accountUnLink,
 };

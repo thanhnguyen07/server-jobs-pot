@@ -49,16 +49,18 @@ export const profileValidateSchema = Joi.object({
   id: validateStringRequired(),
 });
 
-export const customTokenValidateSchema = Joi.object({
-  expiresIn: Joi.string()
-    .regex(/[smhd]/)
-    .required(),
+export const accountLinkSchema = Joi.object({
+  provider_data: Joi.object().required(),
+  id: validateStringRequired(),
+});
+
+export const accountUnLinkSchema = Joi.object({
+  provider_id: validateStringRequired(),
+  id: validateStringRequired(),
 });
 
 export const updateAvatarSchema = Joi.object({
-  image_url: validateStringRequired(),
   id: validateStringRequired(),
-  type: validateStringRequired(),
 });
 
 export const checkAccountValidateSchema = Joi.object({

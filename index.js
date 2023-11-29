@@ -20,8 +20,8 @@ db.connect().then(async () => {
     ),
     storageBucket:
       process.env.NODE_ENV === 'development'
-        ? STORAGE_BUCKET
-        : STORAGE_BUCKET_DEV,
+        ? STORAGE_BUCKET_DEV
+        : STORAGE_BUCKET,
   });
 
   const app = express();
