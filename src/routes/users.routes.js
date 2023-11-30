@@ -36,6 +36,11 @@ router.post(
   validateParams(signUpWithEmailValidateSchema),
   usersController.signUpWithEmail,
 );
+router.post(
+  '/refresh-token',
+  validateParams(refreshTokenValidateSchema),
+  usersController.refreshToken,
+);
 
 // Require Token
 router.use(JWToken.verifyToken);
@@ -49,11 +54,7 @@ router.put(
   validateParams(verifyCodeSchema),
   usersController.verifyCode,
 );
-router.post(
-  '/refresh-token',
-  validateParams(refreshTokenValidateSchema),
-  usersController.refreshToken,
-);
+
 router.get(
   '/profile',
   validateParams(profileValidateSchema),
