@@ -12,6 +12,7 @@ const {
   accountLinkSchema,
   checkAccountValidateSchema,
   accountUnLinkSchema,
+  deleteAccountValidateSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 const multer = require('multer');
@@ -69,6 +70,12 @@ router.put(
   '/account-unlink',
   validateParams(accountUnLinkSchema),
   usersController.accountUnLink,
+);
+
+router.delete(
+  '/delete-account',
+  validateParams(deleteAccountValidateSchema),
+  usersController.deleteAccount,
 );
 
 router.post('/update-informations', usersController.updateInformations);

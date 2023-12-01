@@ -718,6 +718,39 @@ const accountUnLink = async req => {
   };
 };
 
+const deleteAccount = async req => {
+  const {id} = req.body;
+
+  const findUserByIdResult = await findUserById(id);
+
+  if (findUserByIdResult) {
+    const deleteUserResult = await UserModel.deleteOne({
+      _id: findUserByIdResult._id,
+    });
+
+    const deleteFirebaseUserRes = await Firebase.deleteAccount(
+      findUserByIdResult.uid,
+    );
+
+    if (deleteUserResult.deletedCount && deleteFirebaseUserRes) {
+      const res = {
+        msg: 'Account deleted successfully!',
+      };
+      return {status: 200, res};
+    } else {
+      return {
+        status: 400,
+        res: {msg: 'Something went wrong!'},
+      };
+    }
+  } else {
+    return {
+      status: 400,
+      res: {msg: 'Account information is incorrect!'},
+    };
+  }
+};
+
 const checkAccount = async req => {
   const {provider_id, email} = req.body;
 
@@ -766,4 +799,5 @@ module.exports = {
   accountLink,
   checkAccount,
   accountUnLink,
+  deleteAccount,
 };

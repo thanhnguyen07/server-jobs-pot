@@ -67,3 +67,7 @@ export const checkAccountValidateSchema = Joi.object({
   provider_id: validateStringRequired(),
   email: validateStringRequired(),
 });
+
+export const deleteAccountValidateSchema = Joi.object({
+  id: validateStringRequired(),
+});

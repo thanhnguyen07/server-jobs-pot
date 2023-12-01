@@ -69,6 +69,17 @@ const updateVerifyEmailUser = async uid => {
       return false;
     });
 };
+const deleteAccount = async uid => {
+  return await auth
+    .getAuth()
+    .deleteUser(uid)
+    .then(() => {
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
+};
 
 module.exports = {
   verifyToken,
@@ -77,4 +88,5 @@ module.exports = {
   getTokenFromReq,
   getUserFromToken,
   updateVerifyEmailUser,
+  deleteAccount,
 };

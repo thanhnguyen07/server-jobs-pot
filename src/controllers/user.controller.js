@@ -164,6 +164,17 @@ const accountUnLink = async (req, res) => {
 
   return res.status(accountUnLinkResult.status).json(accountUnLinkResult.res);
 };
+const deleteAccount = async (req, res) => {
+  const deleteAccountResult = await UserService.deleteAccount(req);
+
+  Log.request({
+    req: req,
+    msg: deleteAccountResult?.res?.msg,
+    code: deleteAccountResult.status,
+  });
+
+  return res.status(deleteAccountResult.status).json(deleteAccountResult.res);
+};
 
 const checkAccount = async function (req, res) {
   const checkAccountResult = await UserService.checkAccount(req);
@@ -189,4 +200,5 @@ module.exports = {
   accountLink,
   checkAccount,
   accountUnLink,
+  deleteAccount,
 };
