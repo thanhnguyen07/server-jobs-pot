@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const TOKEN_EXPIRES_TIME = process.env.TOKEN_EXPIRES_TIME || '3h';
 
 const REFRESH_TOKEN_EXPIRES_TIME =
-  process.env.REFRESH_TOKEN_EXPIRES_TIME || '10 days';
+  process.env.REFRESH_TOKEN_EXPIRES_TIME || '30 days';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
@@ -61,6 +61,21 @@ const SERVICE_ACCOUNT_DEV = {
 };
 const STORAGE_BUCKET_DEV = process.env.STORAGE_BUCKET_DEV;
 
+const MSG_TYPE = {
+  error: 'error',
+  wrong: 'wrong',
+  failure: 'failure',
+  successfully: 'successfully',
+  account_error: 'account_error',
+  error_re_login: 'error_re_login',
+  failed: 'failed',
+};
+
+const STATUS_CODE = {
+  error: 400,
+  success: 200,
+};
+
 module.exports = {
   URI_MONGODB,
   PORT,
@@ -82,4 +97,6 @@ module.exports = {
   MAILJS_TEMPLATE_ID_2,
   MAILJS_PUBLIC_KEY_2,
   MAILJS_PRIVATE_KEY_2,
+  MSG_TYPE,
+  STATUS_CODE,
 };

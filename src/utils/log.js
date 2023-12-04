@@ -10,7 +10,7 @@ const path = ({method, url}) => {
 };
 
 const text = data => {
-  if (typeof data === 'array') {
+  if (typeof data === 'object') {
     data.forEach(element => {
       console.log(`| [MSG] ${element}`);
     });
@@ -36,15 +36,20 @@ const request = ({req, msg, code}) => {
 
   path({method: req.method, url: req.originalUrl});
 
-  numberOfFields > 0 ? separation1() : null;
+  if (numberOfFields > 0) {
+    separation1();
+    params(req.body);
+  }
 
-  numberOfFields > 0 ? params(req.body) : null;
-
-  code ? separation1() : null;
-
-  msg ? text(msg) : null;
-
-  code ? status(code) : null;
+  if (code) {
+    separation1();
+  }
+  if (msg) {
+    text(msg);
+  }
+  if (code) {
+    status(code);
+  }
 
   separation2();
 };

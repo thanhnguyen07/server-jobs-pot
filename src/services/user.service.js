@@ -8,6 +8,7 @@ const {
   hasPassed2Minutes,
   getFileName,
   getCurrentTimeUTC,
+  getMsg,
 } = require('../utils/index.js');
 const {
   BREVO_PASS,
@@ -20,6 +21,8 @@ const {
   MAILJS_PRIVATE_KEY_2,
   MAILJS_SERVICE_ID_2,
   MAILJS_TEMPLATE_ID_2,
+  MSG_TYPE,
+  STATUS_CODE,
 } = require('../constants/index.js');
 const VerificationCodeModel = require('../models/verificationCode.model.js');
 const admin = require('firebase-admin');
@@ -45,12 +48,12 @@ const sendByBrevoService = async (verificationCode, email) => {
     await transporter.sendMail(mailOptions);
     return {
       status: true,
-      msg: `Send by Brevo Service successfully!`,
+      msg: getMsg(MSG_TYPE.successfully, 'Send by Brevo Service'),
     };
   } catch (error) {
     return {
       status: false,
-      msg: `Send by Brevo Service failed!`,
+      msg: getMsg(MSG_TYPE.failed, 'Send by Brevo Service'),
     };
   }
 };
@@ -79,12 +82,12 @@ const sendByEmailJSService = async (
 
     return {
       status: true,
-      msg: `Send by EmailJS Service ${count} successfully!`,
+      msg: getMsg(MSG_TYPE.successfully, 'Send by EmailJS Service ${count}'),
     };
   } catch (error) {
     return {
       status: false,
-      msg: `Send by EmailJS Service ${count} failed!`,
+      msg: getMsg(MSG_TYPE.failed, 'Send by EmailJS Service ${count}'),
     };
   }
 };
@@ -146,7 +149,7 @@ const sendVerificationCode = async email => {
   });
   if (findUserByEmail) {
     // if (findUserByEmail.email_verified) {
-    //   return {status: 400, res: {msg: 'This email has been verified!'}};
+    //   return {status: STATUS_CODE.error, res: {msg: 'This email has been verified!'}};
     // } else {
     const verificationCode = generateRandomCode();
 
@@ -160,17 +163,17 @@ const sendVerificationCode = async email => {
 
       if (sendResult?.status) {
         return {
-          status: 200,
-          res: {msg: 'Email sent successfully!'},
+          status: STATUS_CODE.success,
+          res: {msg: getMsg(MSG_TYPE.successfully, 'Email sent')},
           msg: sendResult.msg,
         };
       }
     }
-    return {status: 400, res: {msg: 'Somthing went wrong!'}};
+    return {status: STATUS_CODE.error, res: {msg: getMsg(MSG_TYPE.wrong)}};
     // }
   } else {
     return {
-      status: 400,
+      status: STATUS_CODE.error,
       res: {msg: 'This email is not yet associated with a user.'},
     };
   }
@@ -199,8 +202,8 @@ const verifyCodeService = async code => {
 
           if (!updateUserResult.acknowledged) {
             return {
-              status: 400,
-              res: {msg: 'Something went wrong!'},
+              status: STATUS_CODE.error,
+              res: {msg: getMsg(MSG_TYPE.wrong)},
             };
           } else {
             Firebase.updateVerifyEmailUser(findUserByEmail.uid);
@@ -208,13 +211,13 @@ const verifyCodeService = async code => {
         }
       }
       return {
-        status: 200,
+        status: STATUS_CODE.success,
         res: {msg: 'Verified successfully!'},
       };
     }
   }
   return {
-    status: 400,
+    status: STATUS_CODE.error,
     res: {msg: 'The verification code is incorrect or has expired!'},
   };
 };
@@ -274,11 +277,11 @@ const profile = async req => {
       refresh_token,
       msg: 'Get profile Successfully!',
     };
-    return {status: 200, res};
+    return {status: STATUS_CODE.success, res};
   } else {
     return {
-      status: 400,
-      res: {msg: 'Account does not exist!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.account_error)},
     };
   }
 };
@@ -359,7 +362,7 @@ const signInWithFirebase = async token_firebase => {
         msg: 'Login Successfully!',
       };
 
-      return {status: 200, res};
+      return {status: STATUS_CODE.success, res};
     } else {
       const createUser = await createUserFormFirebaseData(userDataFirebase);
 
@@ -378,17 +381,17 @@ const signInWithFirebase = async token_firebase => {
           msg: 'Login Successfully!',
         };
 
-        return {status: 200, res};
+        return {status: STATUS_CODE.success, res};
       } else {
         return {
-          status: 400,
-          res: {msg: 'Something wrong!'},
+          status: STATUS_CODE.error,
+          res: {msg: getMsg(MSG_TYPE.wrong)},
         };
       }
     }
   } else {
     return {
-      status: 400,
+      status: STATUS_CODE.error,
       res: {msg: 'Incorrect account information!'},
     };
   }
@@ -403,7 +406,7 @@ const signUpWithEmail = async (user_name, token_firebase) => {
     const findUserByEmailResult = await findUserByEmail(email);
     if (findUserByEmailResult) {
       return {
-        status: 400,
+        status: STATUS_CODE.error,
         res: {msg: 'Email registered!'},
       };
     } else {
@@ -425,18 +428,18 @@ const signUpWithEmail = async (user_name, token_firebase) => {
           refresh_token,
           msg: 'SignUp Successfully!',
         };
-        return {status: 200, res};
+        return {status: STATUS_CODE.success, res};
       } else {
         return {
-          status: 400,
-          res: {msg: 'Something wrong. Please re-signup!'},
+          status: STATUS_CODE.error,
+          res: {msg: getMsg(MSG_TYPE.error_re_login)},
         };
       }
     }
   } else {
     return {
-      status: 400,
-      res: {msg: 'Something wrong. Please re-signup!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.error_re_login)},
     };
   }
 };
@@ -451,14 +454,14 @@ const updateImage = async req => {
 
   if (!userData) {
     return {
-      status: 400,
-      res: {msg: 'Account does not exist!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.account_error)},
     };
   }
 
   if (!imageFile) {
     return {
-      status: 400,
+      status: STATUS_CODE.error,
       res: {msg: 'No files found!'},
     };
   }
@@ -491,7 +494,7 @@ const updateImage = async req => {
 
   const finishPromise = new Promise((resolve, reject) => {
     blobWriter.on('error', _ => {
-      reject(new Error('Something went wrong!'));
+      reject(new Error(getMsg(MSG_TYPE.wrong)));
     });
 
     blobWriter.on('finish', async () => {
@@ -525,7 +528,7 @@ const updateImage = async req => {
         delete resDataUser.updatedAt;
 
         return {
-          status: 200,
+          status: STATUS_CODE.success,
           res: {
             results: resDataUser,
             msg: 'Update avatar successfully!',
@@ -535,13 +538,13 @@ const updateImage = async req => {
     }
 
     return {
-      status: 400,
-      res: {msg: 'Something wrong!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.wrong)},
     };
   } catch (error) {
     return {
-      status: 400,
-      res: {msg: 'Something wrong!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.wrong)},
     };
   }
 };
@@ -561,7 +564,7 @@ const refreshToken = async req => {
       refresh_token,
       msg: 'Refresh token Successfully!',
     };
-    return {status: 200, res};
+    return {status: STATUS_CODE.success, res};
   } else {
     return {
       status: 403,
@@ -613,17 +616,17 @@ const updateInformations = async req => {
         results: resUserData,
         msg: 'Update information successfully!',
       };
-      return {status: 200, res};
+      return {status: STATUS_CODE.success, res};
     } else {
       return {
-        status: 400,
-        res: {msg: 'Account does not exist!'},
+        status: STATUS_CODE.error,
+        res: {msg: getMsg(MSG_TYPE.account_error)},
       };
     }
   } else {
     return {
-      status: 400,
-      res: {msg: 'Something wrong. Please re-signIn!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.error_re_login)},
     };
   }
 };
@@ -635,8 +638,8 @@ const accountLink = async req => {
 
   if (!userData) {
     return {
-      status: 400,
-      res: {msg: 'Account does not exist!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.account_error)},
     };
   }
   const userDataObject = userData.toObject();
@@ -659,7 +662,7 @@ const accountLink = async req => {
       delete resDataUser.updatedAt;
 
       return {
-        status: 200,
+        status: STATUS_CODE.success,
         res: {
           results: resDataUser,
           msg: 'Account link successfully!',
@@ -668,8 +671,8 @@ const accountLink = async req => {
     }
   }
   return {
-    status: 400,
-    res: {msg: 'Something wrong!'},
+    status: STATUS_CODE.error,
+    res: {msg: getMsg(MSG_TYPE.wrong)},
   };
 };
 
@@ -680,8 +683,8 @@ const accountUnLink = async req => {
 
   if (!userData) {
     return {
-      status: 400,
-      res: {msg: 'Account does not exist!'},
+      status: STATUS_CODE.error,
+      res: {msg: getMsg(MSG_TYPE.account_error)},
     };
   }
   const userDataObject = userData.toObject();
@@ -704,7 +707,7 @@ const accountUnLink = async req => {
       delete resDataUser.updatedAt;
 
       return {
-        status: 200,
+        status: STATUS_CODE.success,
         res: {
           results: resDataUser,
           msg: 'Account unlink successfully!',
@@ -713,39 +716,38 @@ const accountUnLink = async req => {
     }
   }
   return {
-    status: 400,
-    res: {msg: 'Something wrong!'},
+    status: STATUS_CODE.error,
+    res: {msg: getMsg(MSG_TYPE.wrong)},
   };
 };
 
 const deleteAccount = async req => {
-  const {id} = req.body;
+  const {token_firebase} = req.body;
+  const userDataFirebase = await Firebase.getUserFromToken(token_firebase);
 
-  const findUserByIdResult = await findUserById(id);
-
-  if (findUserByIdResult) {
+  if (userDataFirebase) {
     const deleteUserResult = await UserModel.deleteOne({
-      _id: findUserByIdResult._id,
+      uid: userDataFirebase.uid,
     });
 
     const deleteFirebaseUserRes = await Firebase.deleteAccount(
-      findUserByIdResult.uid,
+      userDataFirebase.uid,
     );
 
     if (deleteUserResult.deletedCount && deleteFirebaseUserRes) {
       const res = {
         msg: 'Account deleted successfully!',
       };
-      return {status: 200, res};
+      return {status: STATUS_CODE.success, res};
     } else {
       return {
-        status: 400,
-        res: {msg: 'Something went wrong!'},
+        status: STATUS_CODE.error,
+        res: {msg: getMsg(MSG_TYPE.wrong)},
       };
     }
   } else {
     return {
-      status: 400,
+      status: STATUS_CODE.error,
       res: {msg: 'Account information is incorrect!'},
     };
   }
@@ -770,18 +772,18 @@ const checkAccount = async req => {
       const res = {
         msg: 'Successfully!',
       };
-      return {status: 200, res};
+      return {status: STATUS_CODE.success, res};
     } else {
       const res = {
         msg: 'Failure!',
       };
-      return {status: 400, res};
+      return {status: STATUS_CODE.error, res};
     }
   } else {
     const res = {
       msg: 'Successfully!',
     };
-    return {status: 200, res};
+    return {status: STATUS_CODE.success, res};
   }
 };
 

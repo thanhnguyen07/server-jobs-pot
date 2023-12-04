@@ -69,5 +69,5 @@ export const checkAccountValidateSchema = Joi.object({
 });
 
 export const deleteAccountValidateSchema = Joi.object({
-  id: validateStringRequired(),
+  token_firebase: validateStringRequired(),
 });
