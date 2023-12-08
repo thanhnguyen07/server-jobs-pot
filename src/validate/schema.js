@@ -71,3 +71,9 @@ export const checkAccountValidateSchema = Joi.object({
 export const deleteAccountValidateSchema = Joi.object({
   token_firebase: validateStringRequired(),
 });
+
+export const customTokenValidateSchema = Joi.object({
+  expiresIn: Joi.string()
+    .regex(/[smhd]/)
+    .required(),
+});

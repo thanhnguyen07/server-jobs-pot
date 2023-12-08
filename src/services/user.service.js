@@ -787,6 +787,20 @@ const checkAccount = async req => {
   }
 };
 
+const customToken = async req => {
+  const {expiresIn} = req.body;
+
+  const newToken = JWToken.createCustomToken(expiresIn);
+
+  const res = {
+    results: {
+      custom_token: newToken,
+    },
+    msg: 'Create custom token Successfully!',
+  };
+  return {status: 200, res};
+};
+
 module.exports = {
   findUserByEmail,
   findUser,
@@ -802,4 +816,5 @@ module.exports = {
   checkAccount,
   accountUnLink,
   deleteAccount,
+  customToken,
 };

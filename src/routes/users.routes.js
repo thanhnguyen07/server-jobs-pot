@@ -13,12 +13,19 @@ const {
   checkAccountValidateSchema,
   accountUnLinkSchema,
   deleteAccountValidateSchema,
+  customTokenValidateSchema,
 } = require('../validate/schema.js');
 const JWToken = require('../middleware/JWToken.js');
 const multer = require('multer');
 const upload = multer({storage: multer.memoryStorage()});
 
 const router = express.Router();
+
+router.post(
+  '/custom-token',
+  validateParams(customTokenValidateSchema),
+  usersController.customToken,
+);
 
 router.post(
   '/check-account',

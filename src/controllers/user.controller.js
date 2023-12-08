@@ -188,6 +188,18 @@ const checkAccount = async function (req, res) {
   return res.status(checkAccountResult.status).json(checkAccountResult.res);
 };
 
+const customToken = async (req, res) => {
+  const customTokenResult = await UserService.customToken(req);
+
+  Log.request({
+    req: req,
+    msg: customTokenResult?.res?.msg,
+    code: customTokenResult.status,
+  });
+
+  return res.status(customTokenResult.status).json(customTokenResult.res);
+};
+
 module.exports = {
   signUpWithEmail,
   profile,
@@ -201,4 +213,5 @@ module.exports = {
   checkAccount,
   accountUnLink,
   deleteAccount,
+  customToken,
 };
