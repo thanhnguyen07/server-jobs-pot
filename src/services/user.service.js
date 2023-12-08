@@ -531,7 +531,9 @@ const updateImage = async req => {
           status: STATUS_CODE.success,
           res: {
             results: resDataUser,
-            msg: 'Update avatar successfully!',
+            msg: isAvatar
+              ? 'Update avatar successfully!'
+              : 'Update background successfully!',
           },
         };
       }
