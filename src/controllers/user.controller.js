@@ -24,41 +24,13 @@ const refreshToken = async (req, res) => {
 };
 
 const updateInformations = async (req, res) => {
-  const {userName, dateOfBirth, gender, email, phoneNumber, location} =
-    req.body;
-  console.log('====================================');
-  console.log('| [POST] /user/update-informations');
-  console.log('| userName: ', userName);
-  console.log('| dateOfBirth: ', dateOfBirth);
-  console.log('| gender: ', gender);
-  console.log('| email: ', email);
-  console.log('| phoneNumber: ', phoneNumber);
-  console.log('| location: ', location);
-  console.log('| ----------------------------------');
-
-  if (
-    !userName &&
-    !dateOfBirth &&
-    !gender &&
-    !email &&
-    !phoneNumber &&
-    !location
-  ) {
-    console.log('| Incorrect update information!!!');
-    console.log('====================================');
-    return res.status(400).json({msg: 'Incorrect update information!!!'});
-  }
-
-  if (gender != 'Male' && gender != 'Female') {
-    console.log('| gender data field is malformed!!!');
-    console.log('====================================');
-    return res.status(400).json({msg: 'gender data field is malformed!!!'});
-  }
   const updateInformationsResult = await UserService.updateInformations(req);
 
-  console.log('|', updateInformationsResult.res.msg);
-
-  console.log('====================================');
+  Log.request({
+    req: req,
+    msg: updateInformationsResult?.res?.msg,
+    code: updateInformationsResult.status,
+  });
   return res
     .status(updateInformationsResult.status)
     .json(updateInformationsResult.res);

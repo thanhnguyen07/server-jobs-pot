@@ -1,4 +1,3 @@
-const {UserInfo} = require('firebase-admin/auth');
 const mongoose = require('mongoose');
 
 const {Schema} = mongoose;
@@ -15,7 +14,7 @@ const UserSchema = new Schema(
     background_url: {type: String, default: null},
     date_of_birth: {type: String, default: null},
     gender: {type: String, default: null},
-    phone_number: {type: String, default: null},
+    phone_number: {type: Object, default: null},
     location: {type: String, default: null},
   },
   {timestamps: true, versionKey: false},

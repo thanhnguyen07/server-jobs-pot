@@ -576,42 +576,34 @@ const refreshToken = async req => {
 };
 
 const updateInformations = async req => {
-  const {userName, dateOfBirth, gender, email, phoneNumber, location} =
-    req.body;
-  const userDataFirebase = await Firebase.getUser(req);
+  const {userName, dateOfBirth, gender, id, phoneNumber, location} = req.body;
+  const userData = await findUserById(id);
 
-  if (userDataFirebase) {
-    const uid = userDataFirebase.uid;
-
+  if (userData) {
     if (userName) {
-      await UserModel.updateOne({uid}, {userName});
+      await UserModel.updateOne({_id: id}, {user_name: userName});
     }
 
     if (dateOfBirth) {
-      await UserModel.updateOne({uid}, {dateOfBirth});
+      await UserModel.updateOne({_id: id}, {date_of_birth: dateOfBirth});
     }
     if (gender) {
-      await UserModel.updateOne({uid}, {gender});
-    }
-
-    if (email) {
-      await UserModel.updateOne({uid}, {email});
+      await UserModel.updateOne({_id: id}, {gender});
     }
 
     if (phoneNumber) {
-      await UserModel.updateOne({uid}, {phoneNumber});
+      await UserModel.updateOne({_id: id}, {phone_number: phoneNumber});
     }
 
     if (location) {
-      await UserModel.updateOne({uid}, {location});
+      await UserModel.updateOne({_id: id}, {location});
     }
 
-    const userDataBase = await findUserByUid(uid);
+    const userDataBase = await findUserById(id);
 
     if (userDataBase) {
       const resUserData = userDataBase.toObject();
-      resUserData.id = resUserData._id;
-      delete resUserData._id;
+
       delete resUserData.createdAt;
       delete resUserData.updatedAt;
       const res = {

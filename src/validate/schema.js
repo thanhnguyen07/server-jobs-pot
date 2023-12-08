@@ -63,6 +63,15 @@ export const updateAvatarSchema = Joi.object({
   id: validateStringRequired(),
 });
 
+export const updateInformationsSchema = Joi.object({
+  id: validateStringRequired(),
+  userName: validateString().allow(null),
+  dateOfBirth: validateString().allow(null),
+  gender: Joi.string().valid('Male', 'Female').allow(null),
+  phoneNumber: Joi.object().allow(null),
+  location: validateString().allow(null),
+});
+
 export const checkAccountValidateSchema = Joi.object({
   provider_id: validateStringRequired(),
   email: validateStringRequired(),
